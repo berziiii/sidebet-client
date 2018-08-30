@@ -1,0 +1,54 @@
+{
+    "presets": [
+      [
+        "@babel/env",
+        {
+          "modules": false,
+          "useBuiltIns": "entry",
+          "debug": false
+        }
+      ],
+      "@babel/typescript",
+      "@babel/react"
+    ],
+    "env": {
+      "test": {
+        "presets": [
+          [
+            "@babel/env",
+            {
+              "debug": false
+            }
+          ],
+          "@babel/typescript",
+          "@babel/react"
+        ]
+      }
+    },
+    "plugins": [
+      [
+        "@babel/plugin-proposal-decorators",
+        {
+          "legacy": true
+        }
+      ],
+      [
+        "@babel/plugin-proposal-class-properties",
+        {
+          "loose": true
+        }
+      ],
+      [
+        "import",
+        {
+          "libraryName": "antd",
+          "libraryDirectory": "es",
+          "style": true
+        }
+      ],
+      "@babel/plugin-proposal-optional-catch-binding",
+      "@babel/plugin-proposal-optional-chaining",
+      "@babel/plugin-syntax-dynamic-import",
+      "lodash"
+    ]
+  }

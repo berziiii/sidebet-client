@@ -68,6 +68,6 @@ export class AppStore {
         if (replace)
             AppStore.history.replace(url);
         else
-            AppStore.history.push(url);
+            AppStore.history.push(url);        
     }
 }

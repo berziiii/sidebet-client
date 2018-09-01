@@ -10,7 +10,8 @@ export class SignInForm extends BaseComponent<SignInProps, SignInState> {
         super(props);
         this.state = {
             email: "",
-            password: ""
+            password: "",
+            validUser: this.props.validUser
         };
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -30,13 +31,8 @@ export class SignInForm extends BaseComponent<SignInProps, SignInState> {
         const {appStore} = this;
         appStore.dataStore.loginUser(this.state)
         .then((userObj: any) => {
-            appStore.dataStore.storage.setItem("token", userObj.token)
-            .then(() => {
-                appStore.navigateTo("/");
-            })
-            .catch((err) => {
-                console.error(err);
-            });
+            this.setState({validUser: true});
+            this.appStore.navigateTo("/");
         })
         .catch((err: any) => {
             console.error(err);

@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import * as _ from "lodash";
 import * as React from "react";
+import {Observer, Provider} from "mobx-react";
 import * as ComponentFactory from "./components/ComponentFactory";
 import {DataStore} from "../core/stores/DataStore";
 import {AppStore} from "./stores/AppStore";
@@ -16,6 +17,8 @@ export interface AppProps {
 
 export interface AppState {
     collapsed: any;
+    activeNavTab?: any;
+    isLoading?: any;
 }
 
 class App extends React.Component<AppProps, AppState> {
@@ -26,18 +29,26 @@ class App extends React.Component<AppProps, AppState> {
     constructor(props: AppProps) {
         super(props);
         this.state = {
-            collapsed: true
+            collapsed: true,
+            activeNavTab: undefined,
+            isLoading: true,
         };
-        this.dataStore = new DataStore();
         this.appStore = new AppStore();
+        this.dataStore = new DataStore();
     }
 
-    componentWillMount() {
-        if (!this.dataStore.isInitialized) {
-            if (!this.dataStore.isInitializing) {
-                this.dataStore.initialize();
-            }
-        }
+    componentDidMount() {
+        if (!this.appStore.dataStore.initializing) 
+            if (!this.appStore.dataStore.initialized)
+                this.appStore.dataStore.initialize()
+                .then((user: any) => {
+                    if (!_.isNil(user))
+                        this.setState({isLoading: false});
+                })
+                .catch((err) => {
+                    console.error(err);
+                });
+
     }
 
     toggle = () => {
@@ -49,6 +60,7 @@ class App extends React.Component<AppProps, AppState> {
     render() {
         const content = (
             <div className="sb_app__container">
+                {!this.state.isLoading && 
                 <Layout>
                     <Sider
                     trigger={null}
@@ -66,20 +78,26 @@ class App extends React.Component<AppProps, AppState> {
                             </Switch>
                         </Content>
                     </Layout>
-                </Layout>
+                </Layout>}
             </div>
         );
-
         return (
-            <Router>
-                <Route path="/"
-                       render={(props: any) => {
-                           AppStore.history = props.history;
-                           AppStore.location = props.location;
+            <Provider>
+                <>
+                <Observer>
+                    {() => 
+                    <Router>
+                        <Route path="/"
+                            render={(props: any) => {
+                                AppStore.history = props.history;
+                                AppStore.location = props.location;
 
-                           return content;
-                       }}/>
-            </Router>
+                                return content;
+                            }}/>
+                    </Router>}
+                </Observer>
+                </>
+            </Provider>
         );
     }
 }

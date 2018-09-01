@@ -1,0 +1,10 @@
+.sb_navigation__menu-button {
+  background: transparent;
+  color: white;
+  border: none;
+  &:hover, &:visited, &:focus {
+    background: transparent;
+    color: white;
+    border: none;
+  }
+}

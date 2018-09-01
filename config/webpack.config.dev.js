@@ -146,6 +146,9 @@ module.exports = {
             options: {
               
               compact: true,
+              plugins: [
+                ['import', { libraryName: "antd", style: true }]
+              ]
             },
           },
 
@@ -206,7 +209,16 @@ module.exports = {
             loaders: [
                 require.resolve('style-loader'),
                 require.resolve('css-loader'),
-                require.resolve('sass-loader')
+                require.resolve('sass-loader'),
+            ]
+          },
+          {
+            test: /\.less$/,
+            include: paths.appSrc,
+            loaders: [
+                require.resolve('style-loader'),
+                require.resolve('css-loader'),
+                require.resolve('less-loader')
             ]
           },
           // "file" loader makes sure those assets get served by WebpackDevServer.
@@ -219,7 +231,7 @@ module.exports = {
             // its runtime that would otherwise processed through "file" loader.
             // Also exclude `html` and `json` extensions so they get processed
             // by webpacks internal loaders.
-            exclude: [/\.(js|jsx|mjs)$/, /\.html$/, /\.json$/, /\.scss$/],
+            exclude: [/\.(js|jsx|mjs)$/, /\.html$/, /\.json$/, /\.scss$/, /\.less$/],
             loader: require.resolve('file-loader'),
             options: {
               name: 'static/media/[name].[hash:8].[ext]',

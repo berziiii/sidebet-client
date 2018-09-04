@@ -13,10 +13,5 @@
     },
     "routes": {
       "/**": "index.html"
-    },
-    "proxies": {
-      "/": {
-        "origin": "${API_HOST}"
-      }
     }
   }

@@ -41,8 +41,6 @@ export class Navigation extends BaseComponent<NavigationProps, NavigationState> 
             let initial;
             if (!_.isNil(this.appStore.dataStore.authorizedUser.first_name))
                  initial = this.appStore.dataStore.authorizedUser.first_name.charAt(0).toUpperCase();
-            else 
-                initial = false;
             return(
                 <>
                     {!_.isNil(this.appStore.dataStore.authorizedUser.first_name) &&
@@ -54,9 +52,7 @@ export class Navigation extends BaseComponent<NavigationProps, NavigationState> 
                     {_.isNil(this.appStore.dataStore.authorizedUser.first_name) &&
                         <Button 
                         className="sb_navigation__avatar"
-                        onClick={() => this.handleNavClick("/profile")}>
-                        <Icon type="user" />
-                    </Button>}
+                        onClick={() => this.handleNavClick("/profile")}>U</Button>}
                 </>
             );
         };

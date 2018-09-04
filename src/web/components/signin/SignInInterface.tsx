@@ -1,9 +1,8 @@
 export interface SignInProps {
-    validUser?: any;
+    email?: string;
 }
 
 export interface SignInState {
     email?: string;
     password?: string;
-    validUser?: any;
 }

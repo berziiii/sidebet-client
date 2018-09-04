@@ -33,6 +33,23 @@ export class DataStore implements Models.Store {
         return this.initialized;
     }
 
+    processResponse(response: any) {
+        return response.data;
+    }
+
+    @action
+    clearUserAndToken = () => {
+        this.storage.clear()
+        .then(() => {
+            this.authorizedUser = undefined;
+            return "cleared";
+        })
+        .catch((err) => {
+            console.error(err);
+    
+        });
+    }
+
     @action
     initialize() {
         return new Promise((resolve, reject) => {
@@ -47,7 +64,7 @@ export class DataStore implements Models.Store {
                         this.initializing = false;
                         this.initialized = true;
                         this.authorizedUser = userObj;
-                        resolve(userObj);
+                        resolve(this.processResponse(userObj));
                     })
                     .catch((err: any) => {
                         this.initializing = false;
@@ -76,10 +93,9 @@ export class DataStore implements Models.Store {
         return new Promise((resolve, reject) => {
             APIClient.fetchUser()
             .then((user: any) => {
-                resolve(user);
+                resolve(this.processResponse(user));
             })
             .catch((err) => {
-                console.error(err);
                 reject(err);
             });
         });
@@ -89,10 +105,34 @@ export class DataStore implements Models.Store {
     loginUser(userCredentials: Models.SignIn) {
         return new Promise((resolve, reject) => {
             APIClient.signInUser(userCredentials)
-            .then((user: Models.User) => {
+            .then((userObj: Models.User) => {
+                const user = this.processResponse(userObj);
+                APIClient.accessToken = user.token;
                 this.storage.setItem("token", user.token)
                 .then(() => {
                     this.authorizedUser = user;
+                    resolve(user);
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+            })
+            .catch((err) => {
+                reject(err);
+            });
+        });
+    }
+
+    @action
+    createUser(userCredentials: Models.SignUp) {
+        return new Promise((resolve, reject) => {
+            APIClient.signUpUser(userCredentials)
+            .then((userObj: Models.User) => {
+                const user = this.processResponse(userObj);
+                this.authorizedUser = user;
+                APIClient.accessToken = user.token;
+                this.storage.setItem("token", user.token)
+                .then(() => {
                     resolve(user);
                 })
                 .catch((err) => {
@@ -101,7 +141,66 @@ export class DataStore implements Models.Store {
                 });
             })
             .catch((err) => {
-                console.error(err);
+                reject(err);
+            });
+        });
+    }
+
+    @action
+    updateNewUser(profileInfo: Models.NewProfile) {
+        return new Promise((resolve, reject) => {
+            APIClient.newProfile(profileInfo)
+            .then((userObj: Models.User) => {
+                const user = this.processResponse(userObj);
+                APIClient.accessToken = user.token;
+                this.authorizedUser = user;
+                resolve(user);
+            })
+            .catch((err: any) => {
+                reject(err);
+            });
+        });
+    }
+
+    @action
+    updateUserProfile(profileInfo: Models.UserProfile) {
+        return new Promise((resolve, reject) => {
+            APIClient.updateProfile(profileInfo)
+            .then((userObj: Models.User) => {
+                const user = this.processResponse(userObj);
+                APIClient.accessToken = user.token;
+                this.authorizedUser = user;
+                resolve(user);
+            })
+            .catch((err: any) => {
+                reject(err);
+            });
+        });
+    }
+
+    @action
+    updateUserPassword(userData: Models.UserPassword) {
+        return new Promise((resolve, reject) => {
+            APIClient.updatePassword(userData)
+            .then((userObj: Models.User) => {
+                const user = this.processResponse(userObj);
+                resolve(user);
+            })
+            .catch((err: any) => {
+                reject(err);
+            });
+        });
+    }
+
+    @action
+    deleteUser(userData: Models.UserPassword) {
+        return new Promise((resolve, reject) => {
+            APIClient.deleteUserAccount(userData)
+            .then((userObj: Models.User) => {
+                const user = this.processResponse(userObj);
+                resolve(user);
+            })
+            .catch((err: any) => {
                 reject(err);
             });
         });

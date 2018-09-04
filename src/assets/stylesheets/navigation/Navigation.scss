@@ -1,3 +1,24 @@
+.sb_navigation__menu-container {
+  height: 100%;
+  position: relative;
+  padding-top: 20px;
+}
+
+.sb_navigation__avatar {
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 40px;
+  margin-bottom: 15px;
+  font-size: 1.25em;
+  color: $white;
+  background: $light-blue;
+  &:focus, &:hover, &:visited {
+    color: $white;
+    background: $light-blue;
+  }
+}
+
 .sb_navigation__menu-button {
   background: transparent;
   color: white;
@@ -8,6 +29,17 @@
     border: none;
   }
 }
+
 .ant-menu-item-selected {
   background: transparent!important;
+}
+
+.sb_navigation__logout-icon {
+  bottom: 20px !important;
+  position: absolute !important;
+}
+.sb_navigation__menu-button,
+.sb_navigation__menu-icon {
+  font-size: 1.6em !important;
+  margin-left: -5px !important;
 }

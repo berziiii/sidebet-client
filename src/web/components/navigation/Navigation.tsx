@@ -15,11 +15,9 @@ export class Navigation extends BaseComponent<NavigationProps, NavigationState> 
         this.handleLogout = this.handleLogout.bind(this);
     }
 
-    // componentWillMount() {
-    //     if (!_.isNil(this.appStore.dataStore.authorizedUser)) {
-    //         this.setState({validUser: true});
-    //     }
-    // }
+    componentWillMount() {
+        this.appStore.checkAuthenticatedRoute();
+    }
 
     handleNavClick(path: string) {
         this.appStore.navigateTo(path);
@@ -29,50 +27,87 @@ export class Navigation extends BaseComponent<NavigationProps, NavigationState> 
         this.appStore.dataStore.storage.clear()
         .then(() => {
             this.setState({validUser: false});
-            this.appStore.dataStore.authorizedUser = undefined;
+            this.appStore.dataStore.clearUserAndToken();
             this.appStore.navigateTo("/signin");
+            this.appStore.showMessage("success", "Successfully Logged Out.");
         })
         .catch((err) => {
             console.error(err);
+            this.appStore.showMessage("error", err);
         });
     }
     render() {
+        const avatar = () => {
+            let initial;
+            if (!_.isNil(this.appStore.dataStore.authorizedUser.first_name))
+                 initial = this.appStore.dataStore.authorizedUser.first_name.charAt(0).toUpperCase();
+            else 
+                initial = false;
+            return(
+                <>
+                    {!_.isNil(this.appStore.dataStore.authorizedUser.first_name) &&
+                    <Button 
+                        className="sb_navigation__avatar"
+                        onClick={() => this.handleNavClick("/profile")}>
+                        {initial}
+                    </Button>}
+                    {_.isNil(this.appStore.dataStore.authorizedUser.first_name) &&
+                        <Button 
+                        className="sb_navigation__avatar"
+                        onClick={() => this.handleNavClick("/profile")}>
+                        <Icon type="user" />
+                    </Button>}
+                </>
+            );
+        };
+
         return (
             <Observer>
                 {() => 
                 <Menu
+                    className="sb_navigation__menu-container"
                     mode="inline"
                     theme="dark">
-                    <Button 
-                    className="sb_navigation__menu-button"
-                    size="large" 
-                    onClick={this.props.toggle}>
-                        <Icon
-                        className="trigger"
-                        type={this.props.collapsed ? "menu-unfold" : "menu-fold"}
-                        />
-                    </Button>
+                    
+                    {!_.isNil(this.appStore.dataStore.authorizedUser) && 
+                        avatar()}
+                    {!_.isNil(this.appStore.dataStore.authorizedUser) &&
                     <Menu.Item 
                         onClick={() => this.handleNavClick("/")}
                         key="home">
-                        <Icon type="home" />
+                        <Icon 
+                        className="sb_navigation__menu-icon"
+                        type="home" />
                         <span> Home </span>
-                    </Menu.Item>
+                    </Menu.Item>}
+                    {_.isNil(this.appStore.dataStore.authorizedUser) && 
+                    <Menu.Item 
+                        onClick={() => this.handleNavClick("/signup")}
+                        key="signup">
+                        <Icon 
+                        className="sb_navigation__menu-icon"
+                        type="user-add" />
+                        <span> Sign Up </span>
+                    </Menu.Item>}
                     {_.isNil(this.appStore.dataStore.authorizedUser) && 
                     <Menu.Item 
                         onClick={() => this.handleNavClick("/signin")}
                         key="signin">
-                        <Icon type="login" />
+                        <Icon 
+                        className="sb_navigation__menu-icon"
+                        type="login" />
                         <span> Login </span>
                     </Menu.Item>}
                     {!_.isNil(this.appStore.dataStore.authorizedUser) && 
-                    <Menu.Item 
-                        onClick={this.handleLogout}
-                        className="sb_navigation__logout-icon"
-                        key="logout">
-                            <Icon type="logout" />
-                            <span> Logout </span>
-                    </Menu.Item>}
+                        <Menu.Item 
+                            onClick={this.handleLogout}
+                            className="sb_navigation__logout-icon"
+                            key="logout">
+                                <Icon 
+                                className="sb_navigation__menu-icon"
+                                type="logout" />
+                                <span> Logout </span>
+                        </Menu.Item>}
                 </Menu>  
                 }      
             </Observer>

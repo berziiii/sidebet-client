@@ -1,4 +1,4 @@
-.sb_signin__main-container {
+.sb_signup__main-container {
   min-height: 100vh;
   width: 100%;
   max-width: 1200px;
@@ -8,23 +8,23 @@
   align-items: center;
 }
 
-.sb_signin__form-container {
+.sb_signup__form-container {
   margin: 0 auto;
   max-width: 1200px;
   width: 60%;
 }
 
-.sb_signin__input {
+.sb_signup__input {
   margin-bottom: 0px;
   font-size: 2em;
 }
 
-.sb_signin__submit-button {
+.sb_signup__submit-button {
   margin-top: 20px !important;
 }
 
 @media (max-width: 767px) {
-  .sb_signin__form-container {
+  .sb_signup__form-container {
     width: 95%;
   }
 }

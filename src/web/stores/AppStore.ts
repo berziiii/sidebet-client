@@ -1,5 +1,6 @@
 import * as _ from "lodash";
 import {DataStore} from "../../core/stores/DataStore";
+import { message } from "antd";
 
 export enum AppMode {
     Mobile = "mobile",
@@ -46,6 +47,10 @@ export class AppStore {
         this.state.mode = mode;
     }
 
+    public showMessage(type: string, ms: string) {
+        message[type](ms);
+    }
+
     private evaluateMode(): AppMode {
         const {mobileBreakpoint} = this;
 
@@ -69,5 +74,15 @@ export class AppStore {
             AppStore.history.replace(url);
         else
             AppStore.history.push(url);        
+    }
+
+    public checkAuthenticatedRoute() {
+        if (_.isNil(this.dataStore.authorizedUser)) {
+            const path = AppStore.history.location.pathname;
+            if (path.indexOf("admin") !== -1) {
+            } else if (path.indexOf("signin") === -1 && path.indexOf("signup") === -1) {
+                this.navigateTo("/signin");
+            }
+        }
     }
 }

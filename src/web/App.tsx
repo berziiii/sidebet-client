@@ -41,12 +41,12 @@ class App extends React.Component<AppProps, AppState> {
         if (!this.appStore.dataStore.initializing) 
             if (!this.appStore.dataStore.initialized)
                 this.appStore.dataStore.initialize()
-                .then((user: any) => {
-                    if (!_.isNil(user))
-                        this.setState({isLoading: false});
+                .then(() => {
+                    this.setState({isLoading: false});
                 })
                 .catch((err) => {
                     console.error(err);
+                    this.appStore.showMessage("error", err);
                 });
 
     }
@@ -63,9 +63,9 @@ class App extends React.Component<AppProps, AppState> {
                 {!this.state.isLoading && 
                 <Layout>
                     <Sider
-                    trigger={null}
                     collapsible
                     collapsed={this.state.collapsed}
+                    onCollapse={this.toggle}
                     >
                         <div className="logo" />
                         <ComponentFactory.Navigation collapsed={this.state.collapsed} toggle={this.toggle} />
@@ -73,8 +73,12 @@ class App extends React.Component<AppProps, AppState> {
                     <Layout>
                         <Content>
                             <Switch>
-                                <Route exact path="/" component={ComponentFactory.Home}/>
-                                <Route path="/signin" component={ComponentFactory.SignIn}/>
+                                <Route exact path={"/"} component={ComponentFactory.Home}/>
+                                <Route exact path={"/signin"} component={ComponentFactory.SignIn}/>
+                                <Route exact path={"/signup"} component={ComponentFactory.SignUp}/>
+                                <Route exact path={"/profile"} component={ComponentFactory.Profile}/>
+
+                                <Route component={ComponentFactory.NotFound}/>
                             </Switch>
                         </Content>
                     </Layout>

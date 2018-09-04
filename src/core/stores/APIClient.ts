@@ -40,37 +40,115 @@ export class APIClient {
         return result;
     }
 
-    static createUser() {
-        // this
-    }
-
     static fetchUser() {
-        const {client, config} = this.createClient();
-        return client.get(`/api/users/fetchuser`, config)
-        .then((user: any) => {
-            return this.processResponse(user);
-        })
-        .catch((err) => {
-            console.error(err);
-            return err;
+        return new Promise((resolve, reject) => {
+            const {client, config} = this.createClient();
+            return client.get(`/api/users/fetchuser`, config)
+            .then((user: any) => {
+                resolve(user);
+            })
+            .catch((err) => {
+                console.error(err);
+                reject(err.response.data);
+            });
         });
     }
 
     static signInUser(userData: Models.SignIn) {
-        const {client, config} = this.createClient();
+        return new Promise((resolve, reject) => {
+            const {client, config} = this.createClient();
 
-        return client.post(`/api/users/login`, userData, config)
-        .then((user: AxiosResponse) => {
-            return this.processResponse(user);
-        })
-        .catch((err) => {
-            console.error(err);
-            return err;
+            return client.post(`/api/users/login`, userData, config)
+            .then((user: AxiosResponse) => {
+                resolve(user);
+            })
+            .catch((err) => {
+                console.error(err);
+                reject(err.response.data);
+            });
         });
     }
 
-    static processResponse(response: any) {
-        return response.data;
+    static signUpUser(userData: Models.SignUp) {
+        return new Promise((resolve, reject) => {
+            const {client, config} = this.createClient();
+            return client.post(`/api/users/signup`, userData, config)
+            .then((user: AxiosResponse) => {
+                resolve(user);
+            })
+            .catch((err) => {
+                console.error(err);
+                reject(err.response.data);
+            });
+        });
+    }
+
+    static newProfile(userData: Models.NewProfile) {
+        return new Promise((resolve, reject) => {
+            const {client, config} = this.createClient();
+            const userId = userData.user_id;
+            delete userData.user_id;
+            const url = `/api/users/${userId}/update`;
+            return client.put(url, userData, config)
+            .then((user: AxiosResponse) => {
+                resolve(user);
+            })
+            .catch((err) => {
+                console.error(err);
+                reject(err.response.data);
+            });
+        });
+    }
+
+    static updateProfile(userData: Models.NewProfile) {
+        return new Promise((resolve, reject) => {
+            const {client, config} = this.createClient();
+            const userId = userData.user_id;
+            delete userData.user_id;
+            const url = `/api/users/${userId}/update`;
+            return client.put(url, userData, config)
+            .then((user: AxiosResponse) => {
+                resolve(user);
+            })
+            .catch((err) => {
+                console.error(err);
+                reject(err.response.data);
+            });
+        });
+    }
+
+    static updatePassword(userData: Models.UserProfile) {
+        return new Promise((resolve, reject) => {
+            const {client, config} = this.createClient();
+            const userId = userData.user_id;
+            delete userData.user_id;
+            const url = `/api/users/${userId}/password`;
+            return client.put(url, userData, config)
+            .then((user: AxiosResponse) => {
+                resolve(user);
+            })
+            .catch((err) => {
+                console.error(err);
+                reject(err.response.data);
+            });
+        });
+    }
+
+    static deleteUserAccount(userData: Models.UserProfile) {
+        return new Promise((resolve, reject) => {
+            const {client, config} = this.createClient();
+            const userId = userData.user_id;
+            delete userData.user_id;
+            const url = `/api/users/${userId}/delete`;
+            return client.delete(url, config)
+            .then((user: AxiosResponse) => {
+                resolve(user);
+            })
+            .catch((err) => {
+                console.error(err);
+                reject(err.response.data);
+            });
+        });
     }
 }
 

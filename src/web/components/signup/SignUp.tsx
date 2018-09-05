@@ -18,11 +18,13 @@ export class SignUpForm extends BaseComponent<SignUpProps, SignUpState> {
             first_name: "",
             last_name: "",
             phone: "",
-            successfulSignup: false
+            successfulSignup: false,
+            validUsername: true
         };
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleUpdateProfile = this.handleUpdateProfile.bind(this);
+        this.validateEmailAndPassword = this.validateEmailAndPassword.bind(this);
     }
     handleChange = (e: any) => {
         const target = e.target;
@@ -32,6 +34,36 @@ export class SignUpForm extends BaseComponent<SignUpProps, SignUpState> {
         this.setState({
             [name]: value
         });
+        if (name === "username") {
+            const data = {
+                username: value
+            };
+            this.appStore.dataStore.checkUsername(data)
+            .then((valid) => {
+                if (valid) {
+                    this.setState({validUsername: true});
+                } else {
+                    this.setState({validUsername: false});
+                }
+
+            })
+            .catch((err) => {
+                this.appStore.showMessage("error", err);
+            });
+        }
+    }
+
+    validateEmailAndPassword(email: string | undefined, password: string | undefined) {
+        const validEmail = this.appStore.validateEmail(email);
+        const validPassword = this.appStore.validatePassword(password);
+
+        if (validEmail && validPassword)
+            return true;
+        else if (!validEmail)
+            this.appStore.showMessage("error", "Please enter a valid Email");
+        else if (!validPassword)
+            this.appStore.showMessage("error", "Please enter a valid Password");
+        return false;
     }
 
     handleSubmit = (e: any) => {
@@ -42,18 +74,20 @@ export class SignUpForm extends BaseComponent<SignUpProps, SignUpState> {
             email: this.state.email,
             password: this.state.password
         };
-        appStore.dataStore.createUser(user)
-        .then((userObj: any) => {
-            if (!_.isNil(userObj)) {
-                this.appStore.dataStore.authorizedUser = userObj;
-                this.setState({successfulSignup: true});
-                this.appStore.showMessage("success", "Account Successfully Created.");
-            }
-        })
-        .catch((err: any) => {
-            console.error(err);
-            this.appStore.showMessage("error", err);
-        });
+        if (this.validateEmailAndPassword(user.email, user.password)) {
+            appStore.dataStore.createUser(user)
+            .then((userObj: any) => {
+                if (!_.isNil(userObj)) {
+                    this.appStore.dataStore.authorizedUser = userObj;
+                    this.setState({successfulSignup: true});
+                    this.appStore.showMessage("success", "Account Successfully Created.");
+                }
+            })
+            .catch((err: any) => {
+                console.error(err);
+                this.appStore.showMessage("error", err);
+            });
+        }
     }
 
     handleUpdateProfile = (e: any) => {
@@ -80,21 +114,31 @@ export class SignUpForm extends BaseComponent<SignUpProps, SignUpState> {
     }
 
     render() {
+        const formItemLayout = {
+            labelCol: { span: 6 },
+            wrapperCol: { span: 16 },
+          };
         const signup = (
             <div className="sb_signup__main-container">
                 <div className="sb_signup__form-container">
                     <h1> CREATE AN ACCOUNT </h1>
                     <Form onSubmit={this.handleSubmit} name="signup" className="login-form">
-                        <FormItem className="sb_signup__input">
+                        <FormItem 
+                            {...formItemLayout}
+                            label="APP Secret Key: "
+                            className="sb_signup__input">
                             <Input 
                                 prefix={<Icon type="key" style={{ color: "rgba(0,0,0,.25)" }} />} 
                                 onChange={this.handleChange} 
                                 value={this.state.app_secret_key} 
                                 name="app_secret_key" 
-                                type="password" 
-                                placeholder="API Secret Key" />
+                                type="password"
+                                placeholder="APP Secret Key" />
                         </FormItem>
-                        <FormItem className="sb_signup__input">
+                        <FormItem 
+                            {...formItemLayout}
+                            label="Email: "
+                            className="sb_signup__input">
                             <Input 
                                 prefix={<Icon type="user" style={{ color: "rgba(0,0,0,.25)" }} />} 
                                 onChange={this.handleChange} 
@@ -102,7 +146,11 @@ export class SignUpForm extends BaseComponent<SignUpProps, SignUpState> {
                                 name="email" 
                                 placeholder="Username" />
                         </FormItem>
-                        <FormItem className="sb_signup__input">
+                        <FormItem 
+                            {...formItemLayout}
+                            label="Password: "
+                            help="Must contain a Capital Letter, Number, Special Character (!@#$%&*?|) and be atleast 8 characters long."
+                            className="sb_signup__input">
                             <Input 
                                 prefix={<Icon type="lock" style={{ color: "rgba(0,0,0,.25)" }} />} 
                                 onChange={this.handleChange} 
@@ -127,15 +175,36 @@ export class SignUpForm extends BaseComponent<SignUpProps, SignUpState> {
             <div className="sb_signup__main-container">
                 <div className="sb_signup__form-container">
                     <Form onSubmit={this.handleUpdateProfile} name="update" className="login-form">
-                        <FormItem className="sb_signup__input">
+                        {this.state.validUsername &&
+                        <FormItem 
+                        {...formItemLayout}
+                        label="Username: "
+                        className="sb_signup__input">
+                        <Input 
+                            prefix={<Icon type="info" style={{ color: "rgba(0,0,0,.25)" }} />} 
+                                onChange={this.handleChange} 
+                                value={this.state.username} 
+                                name="username" 
+                                placeholder="Username" />
+                        </FormItem>}
+                        {!this.state.validUsername &&
+                        <FormItem 
+                            {...formItemLayout}
+                            label="Username: "
+                            validateStatus="error"
+                            help="Username Already Taken"
+                            className="sb_signup__input">
                             <Input 
                                 prefix={<Icon type="info" style={{ color: "rgba(0,0,0,.25)" }} />} 
                                     onChange={this.handleChange} 
                                     value={this.state.username} 
                                     name="username" 
                                     placeholder="Username" />
-                        </FormItem>
-                        <FormItem className="sb_signup__input">
+                        </FormItem>}
+                        <FormItem 
+                            {...formItemLayout}
+                            label="First Name: "
+                            className="sb_signup__input">
                             <Input 
                                 prefix={<Icon type="user" style={{ color: "rgba(0,0,0,.25)" }} />} 
                                 onChange={this.handleChange} 
@@ -143,7 +212,10 @@ export class SignUpForm extends BaseComponent<SignUpProps, SignUpState> {
                                 name="first_name" 
                                 placeholder="First Name" />
                         </FormItem>
-                        <FormItem className="sb_signup__input">
+                        <FormItem 
+                            {...formItemLayout}
+                            label="Last Name: "
+                            className="sb_signup__input">
                             <Input 
                                 prefix={<Icon type="user" style={{ color: "rgba(0,0,0,.25)" }} />} 
                                 onChange={this.handleChange} 
@@ -151,7 +223,10 @@ export class SignUpForm extends BaseComponent<SignUpProps, SignUpState> {
                                 name="last_name" 
                                 placeholder="Last Name" />
                         </FormItem>
-                        <FormItem className="sb_signup__input">
+                        <FormItem 
+                            {...formItemLayout}
+                            label="Phone Number: "
+                            className="sb_signup__input">
                             <Input 
                                 prefix={<Icon type="phone" style={{ color: "rgba(0,0,0,.25)" }} />} 
                                 onChange={this.handleChange} 

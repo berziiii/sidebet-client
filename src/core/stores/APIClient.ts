@@ -150,6 +150,21 @@ export class APIClient {
             });
         });
     }
+
+    static validateUserName(username: any) {
+        return new Promise((resolve, reject) => {
+            const {client, config} = this.createClient();
+            const url = `/api/users/validateUsername`;
+            return client.post(url, username, config)
+            .then((user: AxiosResponse) => {
+                resolve(user);
+            })
+            .catch((err) => {
+                console.error(err);
+                reject(err.response.data);
+            });
+        });
+    }
 }
 
 export default APIClient;

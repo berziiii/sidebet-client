@@ -205,4 +205,18 @@ export class DataStore implements Models.Store {
             });
         });
     }
+
+    @action
+    checkUsername(username: any) {
+        return new Promise((resolve, reject) => {
+            APIClient.validateUserName(username)
+            .then((validUsername: boolean) => {
+                const valid = this.processResponse(validUsername);
+                resolve(valid);
+            })
+            .catch((err: any) => {
+                reject(err);
+            });
+        });
+    }
 }

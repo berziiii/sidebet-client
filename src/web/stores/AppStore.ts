@@ -85,4 +85,17 @@ export class AppStore {
             }
         }
     }
+
+    public validateEmail(email: any) {
+        const regEx = /^\S+@\S+\.\S+$/;
+        return regEx.test(email);
+    }
+
+    public validatePassword(password: any) {
+        return /[A-Z]/       .test(password) &&
+                /[a-z]/       .test(password) &&
+                /[0-9]/       .test(password) &&
+                /[!@#$%&*?]/g.test(password) &&
+                password.length >= 8;
+    }
 }

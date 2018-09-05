@@ -11,4 +11,5 @@ export interface SignUpState {
     last_name?: string;
     phone?: string;
     successfulSignup?: boolean;
+    validUsername?: boolean;
 }

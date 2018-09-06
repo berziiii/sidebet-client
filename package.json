@@ -72,7 +72,7 @@
     "start": "node scripts/start.js",
     "build": "node scripts/build.js",
     "test": "node scripts/test.js --env=jsdom",
-    "pre-deploy": "cp -rf build/ deploy && cp static.json deploy/ && git add . && git commit -m 'deploy' && git subtree push split --prefix deploy/ heroku master && rm -rf deploy",
+    "pre-deploy": "cp -rf build/ deploy && cp static.json deploy/ && git add . && git commit -m 'deploy' && git push heroku `git subtree split --prefix deploy/`:master --force && rm -rf deploy",
     "deploy": "npm run build && npm run pre-deploy"
   },
   "jest": {

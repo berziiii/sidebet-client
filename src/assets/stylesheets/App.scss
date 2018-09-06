@@ -1,7 +1,11 @@
 @import '~antd/dist/antd.css';
+@import 'vendor/antd.scss';
 @import 'theme/colors';
 @import 'theme/index';
+@import "loading/Loading";
 @import 'navigation/Navigation';
 @import 'signin/SignIn';
 @import 'signup/SignUp';
 @import 'profile/Profile';
+@import 'wagers/Wagers';
+@import 'admin/index';

@@ -7,7 +7,7 @@ import {DataStore} from "../core/stores/DataStore";
 import {AppStore} from "./stores/AppStore";
 import { Layout } from "antd";
 
-const { Content, Sider } = Layout;
+const { Content, Sider, Footer } = Layout;
 
 export interface AppProps {
     config?: any;
@@ -37,17 +37,15 @@ class App extends React.Component<AppProps, AppState> {
         this.dataStore = new DataStore();
     }
 
-    componentDidMount() {
-        if (!this.appStore.dataStore.initializing) 
-            if (!this.appStore.dataStore.initialized)
-                this.appStore.dataStore.initialize()
-                .then(() => {
-                    this.setState({isLoading: false});
-                })
-                .catch((err) => {
-                    console.error(err);
-                    this.appStore.showMessage("error", err);
-                });
+    componentWillMount() {
+        this.appStore.dataStore.initialize()
+        .then(() => {
+            this.setState({isLoading: false});
+        })
+        .catch((err) => {
+            console.error(err);
+            this.appStore.showMessage("error", err);
+        });
 
     }
 
@@ -60,27 +58,38 @@ class App extends React.Component<AppProps, AppState> {
     render() {
         const content = (
             <div className="sb_app__container">
-                {!this.state.isLoading && 
+                {this.state.isLoading &&
+                <ComponentFactory.Loading />}
+                {!this.state.isLoading &&
                 <Layout>
                     <Sider
                     collapsible
                     collapsed={this.state.collapsed}
                     onCollapse={this.toggle}
+                    style={{ overflow: "auto", height: "100vh", position: "fixed", left: 0 }}
                     >
                         <div className="logo" />
                         <ComponentFactory.Navigation collapsed={this.state.collapsed} toggle={this.toggle} />
                     </Sider>
-                    <Layout>
+                    <Layout style={{ marginLeft: 80 }}>
                         <Content>
                             <Switch>
-                                <Route exact path={"/"} component={ComponentFactory.Home}/>
+                                {/* User Routes */}
+                                <Route exact path={"/"} component={ComponentFactory.Wagers}/>
                                 <Route exact path={"/signin"} component={ComponentFactory.SignIn}/>
                                 <Route exact path={"/signup"} component={ComponentFactory.SignUp}/>
                                 <Route exact path={"/profile"} component={ComponentFactory.Profile}/>
 
+                                {/* Admin Routes */}
+                                <Route exact path={"/admin/users"} component={ComponentFactory.AdminUsers}/>
+                                <Route exact path={"/admin/wagers"} component={ComponentFactory.AdminWagers}/>
+
                                 <Route component={ComponentFactory.NotFound}/>
                             </Switch>
                         </Content>
+                        <Footer style={{ textAlign: "center" }}>
+                            SideBet &copy;2018
+                        </Footer>
                     </Layout>
                 </Layout>}
             </div>

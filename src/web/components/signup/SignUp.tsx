@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as _ from "lodash";
 import {Observer} from "mobx-react";
-import { Form, Icon, Input, Button } from "antd";
+import { Form, Input, Button } from "antd";
 import {SignUpProps, SignUpState} from "./SIgnUpInterface"; 
 import {BaseComponent} from "../BaseComponent";
 
@@ -119,7 +119,7 @@ export class SignUpForm extends BaseComponent<SignUpProps, SignUpState> {
             wrapperCol: { span: 16 },
           };
         const signup = (
-            <div className="sb_signup__main-container">
+            <div className="sb_app__component-container sb_signup__component-container">
                 <div className="sb_signup__form-container">
                     <h1> CREATE AN ACCOUNT </h1>
                     <Form onSubmit={this.handleSubmit} name="signup" className="login-form">
@@ -128,7 +128,6 @@ export class SignUpForm extends BaseComponent<SignUpProps, SignUpState> {
                             label="APP Secret Key: "
                             className="sb_signup__input">
                             <Input 
-                                prefix={<Icon type="key" style={{ color: "rgba(0,0,0,.25)" }} />} 
                                 onChange={this.handleChange} 
                                 value={this.state.app_secret_key} 
                                 name="app_secret_key" 
@@ -139,20 +138,18 @@ export class SignUpForm extends BaseComponent<SignUpProps, SignUpState> {
                             {...formItemLayout}
                             label="Email: "
                             className="sb_signup__input">
-                            <Input 
-                                prefix={<Icon type="user" style={{ color: "rgba(0,0,0,.25)" }} />} 
+                            <Input  
                                 onChange={this.handleChange} 
                                 value={this.state.email} 
                                 name="email" 
-                                placeholder="Username" />
+                                placeholder="Email" />
                         </FormItem>
                         <FormItem 
                             {...formItemLayout}
                             label="Password: "
                             help="Must contain a Capital Letter, Number, Special Character (!@#$%&*?|) and be atleast 8 characters long."
                             className="sb_signup__input">
-                            <Input 
-                                prefix={<Icon type="lock" style={{ color: "rgba(0,0,0,.25)" }} />} 
+                            <Input  
                                 onChange={this.handleChange} 
                                 value={this.state.password} 
                                 name="password" 
@@ -172,7 +169,7 @@ export class SignUpForm extends BaseComponent<SignUpProps, SignUpState> {
             </div>
         );
         const updateUserProfile = (
-            <div className="sb_signup__main-container">
+            <div className="sb_app__component-container sb_signup-profile__component-container">
                 <div className="sb_signup__form-container">
                     <Form onSubmit={this.handleUpdateProfile} name="update" className="login-form">
                         {this.state.validUsername &&
@@ -181,10 +178,10 @@ export class SignUpForm extends BaseComponent<SignUpProps, SignUpState> {
                         label="Username: "
                         className="sb_signup__input">
                         <Input 
-                            prefix={<Icon type="info" style={{ color: "rgba(0,0,0,.25)" }} />} 
                                 onChange={this.handleChange} 
                                 value={this.state.username} 
                                 name="username" 
+                                autoFocus
                                 placeholder="Username" />
                         </FormItem>}
                         {!this.state.validUsername &&
@@ -195,18 +192,18 @@ export class SignUpForm extends BaseComponent<SignUpProps, SignUpState> {
                             help="Username Already Taken"
                             className="sb_signup__input">
                             <Input 
-                                prefix={<Icon type="info" style={{ color: "rgba(0,0,0,.25)" }} />} 
+
                                     onChange={this.handleChange} 
                                     value={this.state.username} 
                                     name="username" 
+                                    autoFocus
                                     placeholder="Username" />
                         </FormItem>}
                         <FormItem 
                             {...formItemLayout}
                             label="First Name: "
                             className="sb_signup__input">
-                            <Input 
-                                prefix={<Icon type="user" style={{ color: "rgba(0,0,0,.25)" }} />} 
+                            <Input  
                                 onChange={this.handleChange} 
                                 value={this.state.first_name} 
                                 name="first_name" 
@@ -216,8 +213,7 @@ export class SignUpForm extends BaseComponent<SignUpProps, SignUpState> {
                             {...formItemLayout}
                             label="Last Name: "
                             className="sb_signup__input">
-                            <Input 
-                                prefix={<Icon type="user" style={{ color: "rgba(0,0,0,.25)" }} />} 
+                            <Input  
                                 onChange={this.handleChange} 
                                 value={this.state.last_name} 
                                 name="last_name" 
@@ -227,8 +223,7 @@ export class SignUpForm extends BaseComponent<SignUpProps, SignUpState> {
                             {...formItemLayout}
                             label="Phone Number: "
                             className="sb_signup__input">
-                            <Input 
-                                prefix={<Icon type="phone" style={{ color: "rgba(0,0,0,.25)" }} />} 
+                            <Input  
                                 onChange={this.handleChange} 
                                 value={this.state.phone} 
                                 name="phone" 

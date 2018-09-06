@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as _ from "lodash";
 import {Observer} from "mobx-react";
-import { Form, Icon, Input, Button } from "antd";
+import { Form, Input, Button } from "antd";
 import {SignInProps, SignInState} from "./SignInInterface"; 
 import {BaseComponent} from "../BaseComponent";
 
@@ -44,24 +44,32 @@ export class SignInForm extends BaseComponent<SignInProps, SignInState> {
     }
 
     render() {
+        const formItemLayout = {
+            labelCol: { span: 6 },
+            wrapperCol: { span: 16 },
+          };
         return(
             <Observer>
             {() => 
-                <div className="sb_signin__main-container">
+                <div className="sb_app__component-container sb_signin__component-container">
                     <div className="sb_signin__form-container">
                         <h1> SIGN IN </h1>
                         <Form onSubmit={this.handleSubmit} name="signin" className="login-form">
-                            <FormItem className="sb_signin__input">
-                                <Input 
-                                    prefix={<Icon type="user" style={{ color: "rgba(0,0,0,.25)" }} />} 
+                            <FormItem 
+                                {...formItemLayout}
+                                label="Email: "
+                                className="sb_signin__input">
+                                <Input
                                     onChange={this.handleChange} 
                                     value={this.state.email} 
                                     name="email" 
-                                    placeholder="Username" />
+                                    placeholder="Email" />
                             </FormItem>
-                            <FormItem className="sb_signin__input">
-                                <Input 
-                                    prefix={<Icon type="lock" style={{ color: "rgba(0,0,0,.25)" }} />} 
+                            <FormItem 
+                                {...formItemLayout}
+                                label="Password: "
+                                className="sb_signin__input">
+                                <Input
                                     onChange={this.handleChange} 
                                     value={this.state.password} 
                                     name="password" 

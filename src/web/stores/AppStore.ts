@@ -77,11 +77,14 @@ export class AppStore {
     }
 
     public checkAuthenticatedRoute() {
+        const path = AppStore.history.location.pathname;
         if (_.isNil(this.dataStore.authorizedUser)) {
-            const path = AppStore.history.location.pathname;
-            if (path.indexOf("admin") !== -1) {
-            } else if (path.indexOf("signin") === -1 && path.indexOf("signup") === -1) {
+            if (path.indexOf("signin") === -1 && path.indexOf("signup") === -1) {
                 this.navigateTo("/signin");
+            }
+        } else if (!_.isNil(this.dataStore.authorizedUser)) {
+            if (path.indexOf("admin") !== -1 && !this.dataStore.authorizedUser!.is_admin) {
+                this.navigateTo("/");
             }
         }
     }

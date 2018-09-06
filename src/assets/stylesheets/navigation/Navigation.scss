@@ -17,6 +17,9 @@
     color: $white;
     background: $light-blue;
   }
+  & span {
+    margin: 0 auto;
+  }
 }
 
 .sb_navigation__menu-button {
@@ -42,4 +45,10 @@
 .sb_navigation__menu-icon {
   font-size: 1.6em !important;
   margin-left: -5px !important;
+}
+
+.sb_navigation__admin-break {
+  text-transform: uppercase;
+  margin: 50px 0px 20px;
+  color: $white;
 }

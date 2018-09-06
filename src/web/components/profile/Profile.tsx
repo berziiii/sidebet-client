@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as _ from "lodash";
 import {Observer} from "mobx-react";
-import { Form, Icon, Input, Button, Modal } from "antd";
+import { Form, Input, Button, Modal } from "antd";
 import {ProfileProps, ProfileState} from "./ProfileInterface"; 
 import {BaseComponent} from "../BaseComponent";
 
@@ -19,7 +19,8 @@ export class ProfileForm extends BaseComponent<ProfileProps, ProfileState> {
             password: "" || undefined,
             user_id: this.appStore.dataStore.authorizedUser.user_id || null,
             confirmEmail: "",
-            modalVisible: false
+            modalVisible: false,
+            validUsername: true
         };
         this.handleChange = this.handleChange.bind(this);
         this.handleProfileSubmit = this.handleProfileSubmit.bind(this);
@@ -37,6 +38,23 @@ export class ProfileForm extends BaseComponent<ProfileProps, ProfileState> {
         this.setState({
             [name]: value
         });
+        if (name === "username") {
+            const data = {
+                username: value
+            };
+            this.appStore.dataStore.checkUsername(data)
+            .then((valid) => {
+                if (valid) {
+                    this.setState({validUsername: true});
+                } else {
+                    this.setState({validUsername: false});
+                }
+
+            })
+            .catch((err) => {
+                this.appStore.showMessage("error", "Something went wrong. Unable to validate Username");
+            });
+        }
     }
 
     handleProfileSubmit = (e: any) => {
@@ -59,6 +77,17 @@ export class ProfileForm extends BaseComponent<ProfileProps, ProfileState> {
             this.appStore.showMessage("error", err);
         });
     }
+
+    validatePassword(password: string | undefined) {
+        const validPassword = this.appStore.validatePassword(password);
+
+        if (validPassword)
+            return true;
+        else
+            this.appStore.showMessage("error", "Please enter a valid Password");
+        return false;
+    }
+
     handlePasswordSubmit = (e: any) => {
         e.preventDefault();
         const {appStore} = this;
@@ -66,15 +95,18 @@ export class ProfileForm extends BaseComponent<ProfileProps, ProfileState> {
             password: this.state.password,
             user_id: this.appStore.dataStore.authorizedUser.user_id
         };
-        appStore.dataStore.updateUserPassword(userPassword)
-        .then((userObj: any) => {
-            this.setState({password: ""});
-            this.appStore.showMessage("success", "Successfully Updated Password.");
-        })
-        .catch((err: any) => {
-            console.error(err);
-            this.appStore.showMessage("error", err);
-        });
+        if (this.validatePassword(userPassword.password))
+            appStore.dataStore.updateUserPassword(userPassword)
+            .then((userObj: any) => {
+                this.setState({password: ""});
+                this.appStore.showMessage("success", "Successfully Updated Password.");
+            })
+            .catch((err: any) => {
+                console.error(err);
+                this.appStore.showMessage("error", err);
+            });
+        else
+            this.appStore.showMessage("error", "Not a Valid Password. Please try again");
     }
 
     handleRemoveAccount = (e: any) => {
@@ -110,45 +142,75 @@ export class ProfileForm extends BaseComponent<ProfileProps, ProfileState> {
     }
 
     render() {
+        const formItemLayout = {
+            labelCol: { span: 6 },
+            wrapperCol: { span: 16 },
+          };
         const profileForm = (
             <div className="sb_profile__form-container">
                 <Form onSubmit={this.handleProfileSubmit} name="profile" className="login-form">
-                    <FormItem className="sb_profile__input">
+                    <FormItem 
+                        {...formItemLayout}
+                        label="Email: "
+                        className="sb_profile__input">
                         <Input 
-                            prefix={<Icon type="user" style={{ color: "rgba(0,0,0,.25)" }} />} 
                             onChange={this.handleChange} 
                             value={this.state.email} 
                             name="email" 
                             placeholder="Email" 
                             disabled />
                     </FormItem>
-                    <FormItem className="sb_profile__input">
+                    {this.state.validUsername && 
+                        <FormItem 
+                            {...formItemLayout}
+                            label="Username: "
+                            className="sb_profile__input">
                         <Input 
-                            prefix={<Icon  type="user" style={{ color: "rgba(0,0,0,.25)" }} />} 
                             onChange={this.handleChange} 
                             value={this.state.username} 
                             name="username" 
+                            autoFocus
                             placeholder="Username"/>
-                    </FormItem>
-                    <FormItem className="sb_profile__input">
+                    </FormItem>}
+                    {!this.state.validUsername && 
+                        <FormItem 
+                            {...formItemLayout}
+                            label="Username: "
+                            validateStatus="error"
+                            help="Username Already Taken"
+                            className="sb_profile__input">
                         <Input 
-                            prefix={<Icon type="user" style={{ color: "rgba(0,0,0,.25)" }} />} 
+                            onChange={this.handleChange} 
+                            value={this.state.username} 
+                            name="username" 
+                            autoFocus
+                            placeholder="Username"/>
+                    </FormItem>}
+                    <FormItem 
+                        {...formItemLayout}
+                        label="First Name: "
+                        className="sb_profile__input">
+                        <Input  
                             onChange={this.handleChange} 
                             value={this.state.first_name} 
                             name="first_name" 
                             placeholder="First Name"/>
                     </FormItem>
-                    <FormItem className="sb_profile__input">
+                    <FormItem 
+                        {...formItemLayout}
+                        label="Last Name: "
+                        className="sb_profile__input">
                         <Input 
-                            prefix={<Icon type="user" style={{ color: "rgba(0,0,0,.25)" }} />} 
                             onChange={this.handleChange} 
                             value={this.state.last_name} 
                             name="last_name" 
                             placeholder="Last Name"/>
                     </FormItem>
-                    <FormItem className="sb_profile__input">
+                    <FormItem 
+                        {...formItemLayout}
+                        label="Phone: "
+                        className="sb_profile__input">
                         <Input 
-                            prefix={<Icon type="lock" style={{ color: "rgba(0,0,0,.25)" }} />} 
                             onChange={this.handleChange} 
                             value={this.state.phone} 
                             name="phone" 
@@ -169,13 +231,18 @@ export class ProfileForm extends BaseComponent<ProfileProps, ProfileState> {
         const passwordForm = (
             <div className="sb_profile__form-container">
                 <Form onSubmit={this.handlePasswordSubmit} name="password" className="login-form">
-                    <FormItem className="sb_profile__input">
+                    <FormItem
+                        {...formItemLayout}
+                        label="Password: "
+                        help="Must contain a Capital Letter, Number, Special Character (!@#$%&*?|) and be atleast 8 characters long." 
+                        className="sb_profile__input">
                         <Input 
-                            prefix={<Icon type="user" style={{ color: "rgba(0,0,0,.25)" }} />} 
                             onChange={this.handleChange} 
                             value={this.state.password} 
                             name="password" 
+                            type="password"
                             placeholder="New Password" />
+                            
                     </FormItem>
                     <FormItem>
                         <Button 
@@ -214,9 +281,11 @@ export class ProfileForm extends BaseComponent<ProfileProps, ProfileState> {
                   ]}
                 >
                     <Form onSubmit={this.handleRemoveAccountSubmit} name="removeAccount" className="login-form">
-                        <FormItem className="sb_profile__input">
+                        <FormItem 
+                            {...formItemLayout}
+                            label="Confirm Email: "
+                            className="sb_profile__input">
                             <Input 
-                                prefix={<Icon type="user" style={{ color: "rgba(0,0,0,.25)" }} />} 
                                 onChange={this.handleChange} 
                                 value={this.state.confirmEmail} 
                                 name="confirmEmail" 
@@ -230,7 +299,7 @@ export class ProfileForm extends BaseComponent<ProfileProps, ProfileState> {
         return(
             <Observer>
             {() => 
-                <div className="sb_profile__main-container">
+                <div className="sb_app__component-container sb_profile__component-container">
                     <h1> PROFILE </h1>
                     <h3> Account Information </h3>
                     {profileForm}

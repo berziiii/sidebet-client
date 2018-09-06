@@ -18,4 +18,5 @@ export interface ProfileState {
     user_id?: string;
     modalVisible?: boolean;
     confirmEmail?: string;
+    validUsername?: boolean;
 }

@@ -1,10 +1,10 @@
 export interface NavigationProps {
     collapsed: boolean;
     toggle: any;
-    validUser?: any;
+    validUser?: boolean;
 }
 
 export interface NavigationState {
     collapsed: boolean;
-    validUser?: any;
+    validUser?: boolean;
 }

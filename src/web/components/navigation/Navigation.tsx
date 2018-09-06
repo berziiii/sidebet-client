@@ -15,7 +15,7 @@ export class Navigation extends BaseComponent<NavigationProps, NavigationState> 
         this.handleLogout = this.handleLogout.bind(this);
     }
 
-    componentWillMount() {
+    componentDidMount() {
         this.appStore.checkAuthenticatedRoute();
     }
 
@@ -56,7 +56,6 @@ export class Navigation extends BaseComponent<NavigationProps, NavigationState> 
                 </>
             );
         };
-
         return (
             <Observer>
                 {() => 
@@ -73,8 +72,8 @@ export class Navigation extends BaseComponent<NavigationProps, NavigationState> 
                         key="home">
                         <Icon 
                         className="sb_navigation__menu-icon"
-                        type="home" />
-                        <span> Home </span>
+                        type="trophy" />
+                        <span> Wagers </span>
                     </Menu.Item>}
                     {_.isNil(this.appStore.dataStore.authorizedUser) && 
                     <Menu.Item 
@@ -94,6 +93,30 @@ export class Navigation extends BaseComponent<NavigationProps, NavigationState> 
                         type="login" />
                         <span> Login </span>
                     </Menu.Item>}
+                        {!_.isNil(this.appStore.dataStore.authorizedUser) && 
+                        this.appStore.dataStore.authorizedUser.is_admin &&
+                        <h4 className="sb_navigation__admin-break">admin</h4>}
+                        {!_.isNil(this.appStore.dataStore.authorizedUser) && 
+                        this.appStore.dataStore.authorizedUser.is_admin &&
+                        <Menu.Item 
+                            onClick={() => this.handleNavClick("/admin/users")}
+                            key="adminUsers">
+                            <Icon 
+                            className="sb_navigation__menu-icon"
+                            type="team" />
+                            <span> Users </span>
+                        </Menu.Item>}
+                        {!_.isNil(this.appStore.dataStore.authorizedUser) && 
+                        this.appStore.dataStore.authorizedUser.is_admin &&
+                        <Menu.Item 
+                            onClick={() => this.handleNavClick("/admin/wagers")}
+                            key="adminWagers">
+                            <Icon 
+                            className="sb_navigation__menu-icon"
+                            type="dashboard" />
+                            <span> Wagers </span>
+                        </Menu.Item>}
+    
                     {!_.isNil(this.appStore.dataStore.authorizedUser) && 
                         <Menu.Item 
                             onClick={this.handleLogout}

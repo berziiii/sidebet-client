@@ -20,7 +20,6 @@ export class AdminUserPage extends BaseComponent<AdminUserProps, AdminUserState>
     }
 
     componentDidMount() {
-        debugger;
         if (_.isNil(this.state.user))
             this.getUser();
     }

@@ -38,16 +38,16 @@ class App extends React.Component<AppProps, AppState> {
     }
 
     componentWillMount() {
-        if (!this.appStore.dataStore.isInitialized)
-            if (!this.appStore.dataStore.isInitializing)
-                this.appStore.dataStore.initialize()
-                .then(() => {
-                    this.setState({isLoading: false});
-                })
-                .catch((err) => {
-                    console.error(err);
-                    this.appStore.showMessage("error", err);
-                });
+        this.appStore.dataStore.initialize()
+        .then((user: any) => {
+            this.setState({isLoading: false});
+            if (_.isNil(this.appStore.dataStore.authorizedUser))
+                this.appStore.dataStore.clearUserAndToken();
+        })
+        .catch((err) => {
+            console.error(err);
+            this.appStore.showMessage("error", err);
+        });
     }
 
     componentDidMount() {

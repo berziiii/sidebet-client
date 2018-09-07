@@ -4,7 +4,6 @@ import {Observer, observer} from "mobx-react";
 import {AdminUsersListProps, AdminUsersListState} from "./AdminUsersListInterface"; 
 import { Table, Button, Icon } from "antd";
 import {BaseComponent} from "../BaseComponent";
-import * as moment from "moment";
 
 @observer
 export class AdminUsersList extends BaseComponent<AdminUsersListProps, AdminUsersListState> {
@@ -41,37 +40,6 @@ export class AdminUsersList extends BaseComponent<AdminUsersListProps, AdminUser
                 title: "Username",
                 dataIndex: "username",
                 key: "username"
-            },
-            {
-                title: "First Name",
-                dataIndex: "first_name",
-                key: "first_name"
-            },
-            {
-                title: "Last Name",
-                dataIndex: "last_name",
-                key: "last_name"
-            },
-            {
-                title: "Username",
-                dataIndex: "username",
-                key: "username"
-            },
-            {
-                title: "Last Login",
-                dataIndex: "last_login",
-                key: "last_login",
-                render: (text: any, row: any, index: any) => {
-                    return moment(row.last_login).format("llll");
-                }
-            },
-            {
-                title: "Account Created",
-                dataIndex: "created_at",
-                key: "created_at",
-                render: (text: any, row: any, index: any) => {
-                    return moment(row.created_at).format("llll");
-                }
             },
             {
                 title: "Admin",

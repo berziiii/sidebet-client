@@ -188,7 +188,6 @@ export class APIClient {
             delete user.user_id;
             return client.put(url, user, config)
             .then((users: AxiosResponse) => {
-                debugger;
                 resolve(users);
             })
             .catch((err) => {

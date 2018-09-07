@@ -46,7 +46,7 @@ export class SignInForm extends BaseComponent<SignInProps, SignInState> {
     render() {
         const formItemLayout = {
             labelCol: { span: 6 },
-            wrapperCol: { span: 16 },
+            wrapperCol: { span: 14 },
           };
         return(
             <Observer>
@@ -57,13 +57,13 @@ export class SignInForm extends BaseComponent<SignInProps, SignInState> {
                         <Form onSubmit={this.handleSubmit} name="signin" className="login-form">
                             <FormItem 
                                 {...formItemLayout}
-                                label="Email: "
+                                label="Email or Username: "
                                 className="sb_signin__input">
                                 <Input
                                     onChange={this.handleChange} 
                                     value={this.state.email} 
                                     name="email" 
-                                    placeholder="Email" />
+                                    placeholder="Email or Username" />
                             </FormItem>
                             <FormItem 
                                 {...formItemLayout}

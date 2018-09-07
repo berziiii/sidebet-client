@@ -116,7 +116,7 @@ export class SignUpForm extends BaseComponent<SignUpProps, SignUpState> {
     render() {
         const formItemLayout = {
             labelCol: { span: 6 },
-            wrapperCol: { span: 16 },
+            wrapperCol: { span: 14 },
           };
         const signup = (
             <div className="sb_app__component-container sb_signup__component-container">

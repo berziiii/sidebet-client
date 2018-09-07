@@ -25,3 +25,9 @@ body {
   min-height: 100%;
   height: auto;
 }
+
+@media (max-width: 768px) {
+  .sb_app__container {
+    margin-top: 50px;
+  }
+}

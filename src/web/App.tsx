@@ -93,6 +93,7 @@ class App extends React.Component<AppProps, AppState> {
 
                         {/* Admin Routes */}
                         <Route exact path={"/admin/users"} component={ComponentFactory.AdminUsers}/>
+                        <Route exact path={"/admin/users/:userId"} component={ComponentFactory.AdminUser} match={this.props}/>
                         <Route exact path={"/admin/wagers"} component={ComponentFactory.AdminWagers}/>
 
                         <Route component={ComponentFactory.NotFound}/>

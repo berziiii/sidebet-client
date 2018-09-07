@@ -5,3 +5,38 @@
   margin: 20px;
   background: $white;
 }
+.sb_admin-users__users-table {
+  width: 100%;
+}
+
+.sb_admin-users__check-circle {
+  color: $green;
+  background: transparent;
+  font-size: 1.75em;
+  border: none;
+  &:hover, &:focus, &:visited {
+    color: $green;
+    background: transparent;
+  }
+}
+.sb_admin-users__close-circle {
+  color: $red;
+  font-size: 1.75em;
+  border: none;
+  background: transparent;
+  &:hover, &:focus, &:visited {
+    color: $red;
+    background: transparent;
+  }
+}
+
+.sb_admin-users__edit-user {
+  color: $black;
+  font-size: 1.75em;
+  border: none;
+  background: transparent;
+  &:hover, &:focus, &:visited {
+    color: $black;
+    background: transparent;
+  }
+}

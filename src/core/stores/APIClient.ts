@@ -165,6 +165,53 @@ export class APIClient {
             });
         });
     }
+
+    static getAllUsers() {
+        return new Promise((resolve, reject) => {
+            const {client, config} = this.createClient();
+            const url = `/admin/users`;
+            return client.get(url, config)
+            .then((users: AxiosResponse) => {
+                resolve(users);
+            })
+            .catch((err) => {
+                console.error(err);
+                reject(err.response.data);
+            });
+        });
+    }
+
+    static updateUserAdminRole(user: any) {
+        return new Promise((resolve, reject) => {
+            const {client, config} = this.createClient();
+            const url = `/admin/users/${user.user_id}/update`;
+            delete user.user_id;
+            return client.put(url, user, config)
+            .then((users: AxiosResponse) => {
+                debugger;
+                resolve(users);
+            })
+            .catch((err) => {
+                console.error(err);
+                reject(err.response.data);
+            });
+        });
+    }
+
+    static adminGetUserById(userId: any) {
+        return new Promise((resolve, reject) => {
+            const {client, config} = this.createClient();
+            const url = `/admin/users/${userId}`;
+            return client.get(url, config)
+            .then((user: AxiosResponse) => {
+                resolve(user);
+            })
+            .catch((err) => {
+                console.error(err);
+                reject(err.response.data);
+            });
+        });
+    }
 }
 
 export default APIClient;

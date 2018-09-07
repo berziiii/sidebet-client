@@ -219,4 +219,45 @@ export class DataStore implements Models.Store {
             });
         });
     }
+
+    @action
+    adminGetAllUsers() {
+        return new Promise((resolve, reject) => {
+            if (this.authorizedUser.is_admin)
+                APIClient.getAllUsers()
+                .then((users: any) => {
+                    resolve(this.processResponse(users));
+                })
+                .catch((err: any) => {
+                    reject(err);
+                });
+        });
+    }
+
+    @action
+    adminUpdateUserAdmin(user: any) {
+        return new Promise((resolve, reject) => {
+            if (this.authorizedUser.is_admin)
+                APIClient.updateUserAdminRole(user)
+                .then((users: any) => {
+                    resolve(this.processResponse(users));
+                })
+                .catch((err: any) => {
+                    reject(err);
+                });
+        });
+    }
+    @action
+    adminGetUserById(userId: any) {
+        return new Promise((resolve, reject) => {
+            if (this.authorizedUser.is_admin)
+                APIClient.adminGetUserById(userId)
+                .then((user: any) => {
+                    resolve(this.processResponse(user));
+                })
+                .catch((err: any) => {
+                    reject(err);
+                });
+        });
+    }
 }

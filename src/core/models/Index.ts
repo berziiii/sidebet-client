@@ -1,4 +1,5 @@
 export {AccessToken} from "./AccessToken";
+export {AdminUser} from "./AdminUser";
 export {NewProfile} from "./NewProfile";
 export {SignIn} from "./SignIn";
 export {SignUp} from "./SignUp";

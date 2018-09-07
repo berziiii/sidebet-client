@@ -76,6 +76,10 @@
   height: auto;
   min-height: 50px;
   background: $dark-blue;
+  position: fixed;
+  top: 0;
+  width: 100vw;
+  z-index: 1;
 }
 
 .sb_navigation__drawer-button {

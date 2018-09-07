@@ -1,12 +1,13 @@
 import * as React from "react";
 import * as _ from "lodash";
-import {Observer} from "mobx-react";
+import {Observer, observer} from "mobx-react";
 import { Form, Input, Button, Modal } from "antd";
 import {ProfileProps, ProfileState} from "./ProfileInterface"; 
 import {BaseComponent} from "../BaseComponent";
 
 const FormItem = Form.Item;
 
+@observer
 export class ProfileForm extends BaseComponent<ProfileProps, ProfileState> {
     constructor(props: any) {
         super(props);

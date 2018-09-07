@@ -1,5 +1,19 @@
+.ant-layout-sider {
+  min-width: 150px !important;
+  max-width: 150px !important;
+}
+
 .ant-menu-item {
-  padding-left: 0px!important;
-  text-align: center;
+  padding-left: 10px!important;
+  text-align: left;
   margin: 0 auto
+}
+
+.ant-layout-header {
+  line-height: 0px;
+}
+
+.ant-drawer-content {
+  background: $dark-blue;
+  color: $white;
 }

@@ -1,6 +1,7 @@
 import * as _ from "lodash";
 import {DataStore} from "../../core/stores/DataStore";
 import { message } from "antd";
+import {observable, action} from "mobx";
 
 export enum AppMode {
     Mobile = "mobile",
@@ -22,8 +23,8 @@ export class AppStore {
     dataStore = new DataStore();
 
     // STATE
-    state: AppStoreState = {
-        mode: this.evaluateMode(),
+    @observable state: AppStoreState = {
+        mode: AppMode.Desktop,
     };
 
     constructor() {
@@ -32,35 +33,28 @@ export class AppStore {
 
         AppStore.instance = this;
 
-        this.handlerWindowResize = this.handlerWindowResize.bind(this);
-
-        window.addEventListener("resize", this.handlerWindowResize);
-
         document.documentElement.setAttribute("data-browser", navigator.userAgent);
 
-        // this.initialConfig = _.cloneDeep(AppConfig);
-
         return AppStore.instance;
-    }
-    setMode(mode: AppMode) {
-        console.assert(!_.isNil(mode));
-        this.state.mode = mode;
     }
 
     public showMessage(type: string, ms: string) {
         message[type](ms);
     }
-
-    private evaluateMode(): AppMode {
-        const {mobileBreakpoint} = this;
-
-        return !_.isNil(mobileBreakpoint) ? (window.innerWidth < mobileBreakpoint ? AppMode.Mobile : AppMode.Desktop) : AppMode.Desktop;
+    
+    @action
+    public setMode(mode: AppMode) {
+        console.assert(!_.isNil(mode));
+        this.state.mode = mode;
     }
 
-    private handlerWindowResize() {
-        const mode = this.evaluateMode();
+    @action
+    public evaluateMode(): AppMode {
+        const {mobileBreakpoint} = this;
 
+        const mode = !_.isNil(mobileBreakpoint) ? (window.innerWidth < mobileBreakpoint ? AppMode.Mobile : AppMode.Desktop) : AppMode.Desktop;
         this.setMode(mode);
+        return mode;
     }
 
     public navigateTo(path: string, replace: boolean = false) {

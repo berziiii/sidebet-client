@@ -2,24 +2,40 @@
   height: 100%;
   position: relative;
   padding-top: 20px;
+  padding-left: 10px;
+  text-align: left;
 }
 
-.sb_navigation__avatar {
-  width: 40px;
-  height: 40px;
+.sb_navigation__avatar-button {
   border: none;
-  border-radius: 40px;
+  height: auto;
   margin-bottom: 15px;
+  padding: 10px 0px 10px;
   font-size: 1.25em;
-  color: $white;
-  background: $light-blue;
+  color: transparent;
+  background: transparent;
   &:focus, &:hover, &:visited {
+    color: transparent;
+    background: transparent;
+  }
+  .sb_navigation__avatar-icon {
+    display: inline-block;
+    padding: 8px 15px;
     color: $white;
     background: $light-blue;
-  }
-  & span {
+    border-radius: 60px;
     margin: 0 auto;
   }
+  .sb_navigation__avatar-username {
+    display: inline-block;
+    color: $white;
+    padding-left: 5px;
+  }
+}
+
+.sb_navigation__avatar-username {
+  text-transform: capitalize;
+  padding-left: 30px;
 }
 
 .sb_navigation__menu-button {
@@ -39,6 +55,7 @@
 
 .sb_navigation__logout-icon {
   bottom: 20px !important;
+  margin-left: 15px !important;
   position: absolute !important;
 }
 .sb_navigation__menu-button,
@@ -51,4 +68,32 @@
   text-transform: uppercase;
   margin: 50px 0px 20px;
   color: $white;
+}
+
+.sb_navigation__header-container {
+  text-align: left;
+  padding: 10px 15px;
+  height: auto;
+  min-height: 50px;
+  background: $dark-blue;
+}
+
+.sb_navigation__drawer-button {
+  background: transparent;
+  color: $white;
+  font-size: 1.5em;
+  border: none;
+  &:focus, &:visited, &:hover {
+    background: transparent;
+    color: $white;
+  }
+}
+
+.sb_navigation__drawer-menu-container {
+  background: transparent;
+  color: $white;
+  border-right: 0px !important;
+  .sb_navigation__menu-icon, .ant-menu-item {
+    color: $white;
+  }
 }

@@ -1,12 +1,13 @@
 import * as React from "react";
 import * as _ from "lodash";
-import {Observer} from "mobx-react";
+import {Observer, observer} from "mobx-react";
 import { Form, Input, Button } from "antd";
 import {SignInProps, SignInState} from "./SignInInterface"; 
 import {BaseComponent} from "../BaseComponent";
 
 const FormItem = Form.Item;
 
+@observer
 export class SignInForm extends BaseComponent<SignInProps, SignInState> {
     constructor(props: any) {
         super(props);

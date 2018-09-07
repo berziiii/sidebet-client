@@ -1,12 +1,13 @@
 import * as _ from "lodash";
 import * as React from "react";
-import {Observer} from "mobx-react";
+import {Observer, observer} from "mobx-react";
 import { Layout } from "antd";
 import {AdminUsersProps, AdminUsersState} from "./AdminUsersInterface";
 import {BaseComponent} from "../../../components/BaseComponent";
 
 const { Content } = Layout;
 
+@observer
 export class AdminUsers extends BaseComponent<AdminUsersProps, AdminUsersState> {
     constructor(props: AdminUsersProps) {
         super(props);

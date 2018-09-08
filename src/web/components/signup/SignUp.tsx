@@ -26,6 +26,7 @@ export class SignUpForm extends BaseComponent<SignUpProps, SignUpState> {
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleUpdateProfile = this.handleUpdateProfile.bind(this);
         this.validateEmailAndPassword = this.validateEmailAndPassword.bind(this);
+        this.validateUsername = this.validateUsername.bind(this);
     }
     handleChange = (e: any) => {
         const target = e.target;
@@ -52,6 +53,13 @@ export class SignUpForm extends BaseComponent<SignUpProps, SignUpState> {
                 this.appStore.showMessage("error", err);
             });
         }
+    }
+
+    validateUsername(username: any) {
+        const containsSpaces = /\s/g.test(username);
+        if (containsSpaces)
+            return false;
+        return true;
     }
 
     validateEmailAndPassword(email: string | undefined, password: string | undefined) {
@@ -101,17 +109,22 @@ export class SignUpForm extends BaseComponent<SignUpProps, SignUpState> {
             phone: this.state.phone,
             user_id: this.appStore.dataStore.authorizedUser.user_id
         };
-        appStore.dataStore.updateNewUser(user)
-        .then((userObj: any) => {
-            if (!_.isNil(userObj)) {
-                this.appStore.navigateTo("/");
-                this.appStore.showMessage("success", "Profile Successfully Created.");
-            }
-        })
-        .catch((err: any) => {
-            console.error(err);
-            this.appStore.showMessage("error", err);
-        });
+        const validUsername = this.validateUsername(user.username);
+        if (validUsername) {
+            appStore.dataStore.updateNewUser(user)
+            .then((userObj: any) => {
+                if (!_.isNil(userObj)) {
+                    this.appStore.navigateTo("/");
+                    this.appStore.showMessage("success", "Profile Successfully Created.");
+                }
+            })
+            .catch((err: any) => {
+                console.error(err);
+                this.appStore.showMessage("error", err);
+            });
+        } else {
+            this.appStore.showMessage("error", "Username cannot contain spaces.");
+        }
     }
 
     render() {

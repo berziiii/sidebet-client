@@ -42,6 +42,14 @@ export class AdminUsersList extends BaseComponent<AdminUsersListProps, AdminUser
                 key: "username"
             },
             {
+                title: "Full Name",
+                dataIndex: "fullname",
+                key: "fullname",
+                render: (text: any, row: any, index: any) => {
+                    return `${row.first_name} ${row.last_name}`;
+                }
+            },
+            {
                 title: "Admin",
                 dataIndex: "is_admin",
                 key: "is_admin",
@@ -77,13 +85,15 @@ export class AdminUsersList extends BaseComponent<AdminUsersListProps, AdminUser
         ];
         return(
             <Observer>
-            {() => 
-                <Table 
-                    className="sb_admin-users__users-table"
-                    pagination={false}
-                    dataSource={this.props.users} 
-                    columns={columns}
-                    scroll={{ x: 1200 }}/>}
+            {() =>
+                <div className="sb_admin-users__main-container">
+                    <h1 className="sb_admin-users__header">Users</h1>
+                    <Table 
+                        className="sb_admin-users__users-table"
+                        pagination={false}
+                        dataSource={this.props.users} 
+                        columns={columns}/>
+                    </div>}
             </Observer>
         );
     }

@@ -4,5 +4,17 @@ export interface AdminUserProps {
 }
 
 export interface AdminUserState {
-    username?: any;
+    username?: string;
+    is_admin?: boolean;
+    is_active?: boolean;
+    password?: string;
+    first_name?: string;
+    phone?: string;
+    last_name?: string;
+    user_id?: string;
+    email?: string;
+    created_at?: string;
+    last_login?: string;
+    modalVisible?: boolean;
+    confirmEmail?: string;
 }

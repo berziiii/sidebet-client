@@ -40,3 +40,67 @@
     background: transparent;
   }
 }
+
+.sb_admin-users__main-container {
+  margin: 50px auto 0;
+  max-width: 1200px;
+  min-width: 767px;
+  overflow-x: scroll;
+  width: 100%;
+}
+
+.sb_admin-users__header{
+  text-align: center;
+}
+
+.sb_admin-user__content-container {
+  width: calc(100vw - 200px);
+  max-width: 100vw;
+  margin: 0 auto;
+  display: flex;
+  margin: 25px;
+  border-radius: 5px;
+}
+
+.sb_admin-user__personal-info-container {
+  width: 600px;
+  background: $white;
+  min-height: 100vh;
+  text-align: left;
+  padding: 0 5px;
+  border-right: solid 5px $dark-blue;
+  h5 {
+    margin-left: 5px;
+  }
+}
+
+.sb_admin-user__activity-container {
+  width: 100%;
+  min-height: 100vh;
+  background: $white;
+}
+
+.sb_admin-user__personal-info-header,
+.sb_admin-user__status-header,
+.sb_admin-user__password-header {
+  margin: 50px 0px;
+  padding: 10px 0px;
+  background: $dark-blue;
+  color: $white;
+  text-align: center;
+  &:first-child {
+    margin: 0px 0px 50px;
+  }
+}
+
+.sb_admin-user__content {
+  padding-left: 15px;
+  text-transform: uppercase;
+}
+
+.sb_admin-user__reset-password-button,
+.sb_admin-user__remove-account-button {
+  margin: 0 auto;
+  text-align: center;
+  margin: 25px;
+}

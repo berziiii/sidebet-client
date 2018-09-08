@@ -215,6 +215,20 @@ export class DataStore implements Models.Store {
     }
 
     @action
+    adminGetUserById(userId: any) {
+        return new Promise((resolve, reject) => {
+            if (this.authorizedUser.is_admin)
+                APIClient.adminGetUserById(userId)
+                .then((user: any) => {
+                    resolve(this.processResponse(user));
+                })
+                .catch((err: any) => {
+                    reject(err);
+                });
+        });
+    }
+
+    @action
     adminUpdateUserAdmin(user: any) {
         return new Promise((resolve, reject) => {
             if (this.authorizedUser.is_admin)
@@ -227,13 +241,41 @@ export class DataStore implements Models.Store {
                 });
         });
     }
+
     @action
-    adminGetUserById(userId: any) {
+    adminUpdateUserActive(user: any) {
         return new Promise((resolve, reject) => {
             if (this.authorizedUser.is_admin)
-                APIClient.adminGetUserById(userId)
-                .then((user: any) => {
-                    resolve(this.processResponse(user));
+                APIClient.updateUserActiveRole(user)
+                .then((users: any) => {
+                    resolve(this.processResponse(users));
+                })
+                .catch((err: any) => {
+                    reject(err);
+                });
+        });
+    }
+
+    @action
+    adminResetUserPassword(user: any) {
+        return new Promise((resolve, reject) => {
+            if (this.authorizedUser.is_admin)
+                APIClient.resetUserPassword(user)
+                .then((users: any) => {
+                    resolve(this.processResponse(users));
+                })
+                .catch((err: any) => {
+                    reject(err);
+                });
+        });
+    }
+    @action
+    adminDeleteUser(user: any) {
+        return new Promise((resolve, reject) => {
+            if (this.authorizedUser.is_admin)
+                APIClient.adminDeleteUser(user)
+                .then(() => {
+                    resolve();
                 })
                 .catch((err: any) => {
                     reject(err);

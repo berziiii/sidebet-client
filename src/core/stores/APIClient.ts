@@ -181,6 +181,21 @@ export class APIClient {
         });
     }
 
+    static adminGetUserById(userId: any) {
+        return new Promise((resolve, reject) => {
+            const {client, config} = this.createClient();
+            const url = `/admin/users/${userId}`;
+            return client.get(url, config)
+            .then((user: AxiosResponse) => {
+                resolve(user);
+            })
+            .catch((err) => {
+                console.error(err);
+                reject(err.response.data);
+            });
+        });
+    }
+
     static updateUserAdminRole(user: any) {
         return new Promise((resolve, reject) => {
             const {client, config} = this.createClient();
@@ -197,13 +212,46 @@ export class APIClient {
         });
     }
 
-    static adminGetUserById(userId: any) {
+    static updateUserActiveRole(user: any) {
         return new Promise((resolve, reject) => {
             const {client, config} = this.createClient();
-            const url = `/admin/users/${userId}`;
-            return client.get(url, config)
-            .then((user: AxiosResponse) => {
-                resolve(user);
+            const url = `/admin/users/${user.user_id}/update`;
+            delete user.user_id;
+            return client.put(url, user, config)
+            .then((users: AxiosResponse) => {
+                resolve(users);
+            })
+            .catch((err) => {
+                console.error(err);
+                reject(err.response.data);
+            });
+        });
+    }
+
+    static resetUserPassword(user: any) {
+        return new Promise((resolve, reject) => {
+            const {client, config} = this.createClient();
+            const url = `/admin/users/${user.user_id}/update`;
+            delete user.user_id;
+            return client.put(url, user, config)
+            .then((users: AxiosResponse) => {
+                resolve(users);
+            })
+            .catch((err) => {
+                console.error(err);
+                reject(err.response.data);
+            });
+        });
+    }
+
+    static adminDeleteUser(user: any) {
+        return new Promise((resolve, reject) => {
+            const {client, config} = this.createClient();
+            const url = `/admin/users/${user.user_id}/delete`;
+            delete user.user_id;
+            return client.delete(url, config)
+            .then(() => {
+                resolve();
             })
             .catch((err) => {
                 console.error(err);

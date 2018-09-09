@@ -98,6 +98,12 @@
   text-transform: uppercase;
 }
 
+.sb_admin-user__password-reset {
+  .ant-form-explain {
+    font-size: 1em;
+  }
+}
+
 .sb_admin-user__reset-password-button,
 .sb_admin-user__remove-account-button {
   margin: 0 auto;

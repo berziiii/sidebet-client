@@ -106,8 +106,6 @@ export class ProfileForm extends BaseComponent<ProfileProps, ProfileState> {
                 console.error(err);
                 this.appStore.showMessage("error", err);
             });
-        else
-            this.appStore.showMessage("error", "Not a Valid Password. Please try again");
     }
 
     handleRemoveAccount = (e: any) => {

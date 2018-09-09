@@ -35,6 +35,7 @@ export class AdminUser extends BaseComponent<AdminUserProps, AdminUserState> {
         this.handleRemoveAccount = this.handleRemoveAccount.bind(this);
         this.handleRemoveAccountCancel = this.handleRemoveAccountCancel.bind(this);
         this.handleRemoveAccountSubmit = this.handleRemoveAccountSubmit.bind(this);
+        this.validatePassword = this.validatePassword.bind(this);
     }
     componentDidMount() {
         const userId = this.props.match.params.userId;
@@ -102,20 +103,31 @@ export class AdminUser extends BaseComponent<AdminUserProps, AdminUserState> {
         });
     }
 
+    validatePassword(password: string | undefined) {
+        const validPassword = this.appStore.validatePassword(password);
+
+        if (validPassword)
+            return true;
+        else
+            this.appStore.showMessage("error", "Please enter a valid Password");
+        return false;
+    }
+
     handleResetPasswordSubmit() {
         const data = {
             user_id: this.state.user_id,
             password: this.state.password
         };
-        this.appStore.dataStore.adminResetUserPassword(data)
-        .then(() => {
-            this.setState({password: undefined});
-            this.appStore.showMessage("success", "Successfully Updated User Password");
-        })
-        .catch((err: any) => {
-            console.error(err);
-            this.appStore.showMessage("error", "Something went wrong. Unable to Update Admin Status.");
-        });
+        if (this.validatePassword(data.password))
+            this.appStore.dataStore.adminResetUserPassword(data)
+            .then(() => {
+                this.setState({password: undefined});
+                this.appStore.showMessage("success", "Successfully Updated User Password");
+            })
+            .catch((err: any) => {
+                console.error(err);
+                this.appStore.showMessage("error", "Something went wrong. Unable to Update Admin Status.");
+            });
     }
 
     handleRemoveAccount = (e: any) => {
@@ -183,7 +195,10 @@ export class AdminUser extends BaseComponent<AdminUserProps, AdminUserState> {
                             <h5>Active: <span className="sb_admin-user__content">{this.state.is_active ? <Switch checked={true} onChange={this.toggleUserActive} /> : <Switch checked={false} onChange={this.toggleUserActive}/>}</span></h5>
                             <h3 className="sb_admin-user__password-header" >Password Reset</h3>
                             <Form> 
-                                <FormItem label="Reset Password">
+                                <FormItem 
+                                className="sb_admin-user__password-reset"
+                                label="Reset Password"
+                                help="Must contain a Capital Letter, Number, Special Character (!@#$%&*?|) and be atleast 8 characters long." >
                                     <Input 
                                         prefix={<Icon type="key" />} 
                                         placeholder="Reset Password" 

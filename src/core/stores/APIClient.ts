@@ -166,7 +166,11 @@ export class APIClient {
         });
     }
 
-    static getAllUsers() {
+    // ********************* //
+    // ******* ADMIN ******* //
+    // ********************* //
+
+    static adminGetAllUsers() {
         return new Promise((resolve, reject) => {
             const {client, config} = this.createClient();
             const url = `/admin/users`;
@@ -196,7 +200,7 @@ export class APIClient {
         });
     }
 
-    static updateUserAdminRole(user: any) {
+    static adminUpdateUserAdminRole(user: any) {
         return new Promise((resolve, reject) => {
             const {client, config} = this.createClient();
             const url = `/admin/users/${user.user_id}/update`;
@@ -212,7 +216,7 @@ export class APIClient {
         });
     }
 
-    static updateUserActiveRole(user: any) {
+    static adminUpdateUserActiveRole(user: any) {
         return new Promise((resolve, reject) => {
             const {client, config} = this.createClient();
             const url = `/admin/users/${user.user_id}/update`;
@@ -228,7 +232,7 @@ export class APIClient {
         });
     }
 
-    static resetUserPassword(user: any) {
+    static adminResetUserPassword(user: any) {
         return new Promise((resolve, reject) => {
             const {client, config} = this.createClient();
             const url = `/admin/users/${user.user_id}/update`;
@@ -252,6 +256,21 @@ export class APIClient {
             return client.delete(url, config)
             .then(() => {
                 resolve();
+            })
+            .catch((err) => {
+                console.error(err);
+                reject(err.response.data);
+            });
+        });
+    }
+
+    static adminGetUserActivity(userId: any) {
+        return new Promise((resolve, reject) => {
+            const {client, config} = this.createClient();
+            const url = `/admin/users/${userId}/activity`;
+            return client.get(url, config)
+            .then((userAcitivity: any) => {
+                resolve(userAcitivity);
             })
             .catch((err) => {
                 console.error(err);

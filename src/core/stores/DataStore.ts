@@ -200,11 +200,15 @@ export class DataStore implements Models.Store {
         });
     }
 
+    // ********************* //
+    // ******* ADMIN ******* //
+    // ********************* //
+
     @action
     adminGetAllUsers() {
         return new Promise((resolve, reject) => {
             if (this.authorizedUser.is_admin)
-                APIClient.getAllUsers()
+                APIClient.adminGetAllUsers()
                 .then((users: any) => {
                     resolve(this.processResponse(users));
                 })
@@ -232,7 +236,7 @@ export class DataStore implements Models.Store {
     adminUpdateUserAdmin(user: any) {
         return new Promise((resolve, reject) => {
             if (this.authorizedUser.is_admin)
-                APIClient.updateUserAdminRole(user)
+                APIClient.adminUpdateUserAdminRole(user)
                 .then((users: any) => {
                     resolve(this.processResponse(users));
                 })
@@ -246,7 +250,7 @@ export class DataStore implements Models.Store {
     adminUpdateUserActive(user: any) {
         return new Promise((resolve, reject) => {
             if (this.authorizedUser.is_admin)
-                APIClient.updateUserActiveRole(user)
+                APIClient.adminUpdateUserActiveRole(user)
                 .then((users: any) => {
                     resolve(this.processResponse(users));
                 })
@@ -260,7 +264,7 @@ export class DataStore implements Models.Store {
     adminResetUserPassword(user: any) {
         return new Promise((resolve, reject) => {
             if (this.authorizedUser.is_admin)
-                APIClient.resetUserPassword(user)
+                APIClient.adminResetUserPassword(user)
                 .then((users: any) => {
                     resolve(this.processResponse(users));
                 })
@@ -269,6 +273,7 @@ export class DataStore implements Models.Store {
                 });
         });
     }
+
     @action
     adminDeleteUser(user: any) {
         return new Promise((resolve, reject) => {
@@ -276,6 +281,20 @@ export class DataStore implements Models.Store {
                 APIClient.adminDeleteUser(user)
                 .then(() => {
                     resolve();
+                })
+                .catch((err: any) => {
+                    reject(err);
+                });
+        });
+    }
+
+    @action
+    adminGetUserActivity(userId: any) {
+        return new Promise((resolve, reject) => {
+            if (this.authorizedUser.is_admin)
+                APIClient.adminGetUserActivity(userId)
+                .then((userActivity: any) => {
+                    resolve(this.processResponse(userActivity));
                 })
                 .catch((err: any) => {
                     reject(err);

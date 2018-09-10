@@ -4,6 +4,8 @@ export interface AdminUserProps {
 }
 
 export interface AdminUserState {
+    loading?: boolean;
+    activity?: any;
     username?: string;
     is_admin?: boolean;
     is_active?: boolean;

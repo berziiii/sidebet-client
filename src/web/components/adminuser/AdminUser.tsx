@@ -4,15 +4,18 @@ import {Observer, observer} from "mobx-react";
 import {AdminUserProps, AdminUserState} from "./AdminUserInterface"; 
 import { Switch, Form, Input, Icon, Table, Button, Modal } from "antd";
 import {BaseComponent} from "../BaseComponent";
+import * as ComponentFactory from "../ComponentFactory";
 import * as moment from "moment";
 
 const FormItem = Form.Item;
 
 @observer
 export class AdminUser extends BaseComponent<AdminUserProps, AdminUserState> {
+    userActivity: any = [];
     constructor(props: any) {
         super(props);
         this.state = {
+            loading: true,
             email: undefined,
             user_id: undefined,
             first_name: undefined,
@@ -25,7 +28,10 @@ export class AdminUser extends BaseComponent<AdminUserProps, AdminUserState> {
             created_at: undefined,
             last_login: undefined,
             modalVisible: false,
-            confirmEmail: undefined
+            confirmEmail: undefined,
+            activity: {
+                log: undefined
+            }
         };
         this.getUser = this.getUser.bind(this);
         this.toggleUserAdmin = this.toggleUserAdmin.bind(this);
@@ -37,13 +43,33 @@ export class AdminUser extends BaseComponent<AdminUserProps, AdminUserState> {
         this.handleRemoveAccountSubmit = this.handleRemoveAccountSubmit.bind(this);
         this.validatePassword = this.validatePassword.bind(this);
     }
+
     componentDidMount() {
         const userId = this.props.match.params.userId;
-        this.getUser(userId);
+        this.getUser(userId)
+        .then(() => {
+            return this.getUserActivity(userId);
+        })
+        .then(() => {
+            this.setState({loading: false});
+        })
+        .catch((err: any) => {
+            console.error(err);
+            this.appStore.showMessage("error", "Something went wrong. Unable to load User information");
+        });
+    }
+
+    componentDidUpdate() {
+        const userId = this.props.match.params.userId;
+        this.getUserActivity(userId)
+        .catch((err: any) => {
+            console.error(err);
+            this.appStore.showMessage("error", "Something went wrong. Unable to load User information");
+        });
     }
 
     getUser(userId: string) {
-        this.appStore.dataStore.adminGetUserById(userId)
+        return this.appStore.dataStore.adminGetUserById(userId)
         .then((user: any) => {
             this.setState({
                 email: user.email,
@@ -53,7 +79,9 @@ export class AdminUser extends BaseComponent<AdminUserProps, AdminUserState> {
                 first_name: user.first_name,
                 last_name: user.last_name,
                 user_id: user.user_id,
-                phone: user.phone
+                phone: user.phone,
+                last_login: user.last_login,
+                created_at: user.created_at
             });
         })
         .catch((err: any) => {
@@ -61,6 +89,26 @@ export class AdminUser extends BaseComponent<AdminUserProps, AdminUserState> {
             this.appStore.showMessage("error", "Something went wrong. Unable to get User"); 
         });
     }
+
+    getUserActivity(userId: string) {
+        return this.appStore.dataStore.adminGetUserActivity(userId)
+        .then((userActivity: any) => {
+            if (userActivity.length !== this.userActivity.length) {
+                this.userActivity = userActivity;                
+                this.setState({
+                    activity: {
+                        log: userActivity
+                    }
+                });
+                return;
+            }
+            return this.userActivity;
+        })
+        .catch((err: any) => {
+            console.error(err);
+            this.appStore.showMessage("error", "Something went wrong. Unable to get User"); 
+        });
+        }
 
     toggleUserAdmin() {
         const data = {
@@ -167,7 +215,10 @@ export class AdminUser extends BaseComponent<AdminUserProps, AdminUserState> {
             {
                 title: "Date / Time",
                 dataIndex: "timestamp",
-                key: "timestamp"
+                key: "timestamp",
+                render: (text: any, row: any, index: any) => {
+                    return `${moment(row.timestamp).format("llll")}`;
+                }
             },
             {
                 title: "Activity",
@@ -176,91 +227,99 @@ export class AdminUser extends BaseComponent<AdminUserProps, AdminUserState> {
             }
         ];
 
+        const content = (
+            <>
+            <div className="sb_admin-user__content-container">
+                <div className="sb_admin-user__personal-info-container">
+                    <h3 className="sb_admin-user__personal-info-header">Personal Information</h3>
+                    <h5> Email: <span className="sb_admin-user__content">{this.state.email}</span></h5>
+                    <h5>ID: <span className="sb_admin-user__content">{this.state.user_id}</span> </h5>
+                    <h5>Name: <span className="sb_admin-user__content">{this.state.first_name} {this.state.last_name}</span></h5>
+                    <h5>Username: <span className="sb_admin-user__content">{this.state.username}</span> </h5>
+                    <h5>Phone: <span className="sb_admin-user__content">{this.state.phone}</span></h5>
+                    <h5>Account Created: <span className="sb_admin-user__content">{moment(this.state.created_at).format("llll")}</span> </h5>
+                    <h5>Last Login: <span className="sb_admin-user__content">{moment(this.state.last_login).format("llll")}</span> </h5>
+                    <h3 className="sb_admin-user__status-header">Status / Permissions</h3>
+                    <h5>Admin: <span className="sb_admin-user__content">{this.state.is_admin ? <Switch checked={true} onChange={this.toggleUserAdmin} /> : <Switch checked={false} onChange={this.toggleUserAdmin}/>}</span> </h5> 
+                    <h5>Active: <span className="sb_admin-user__content">{this.state.is_active ? <Switch checked={true} onChange={this.toggleUserActive} /> : <Switch checked={false} onChange={this.toggleUserActive}/>}</span></h5>
+                    <h3 className="sb_admin-user__password-header" >Password Reset</h3>
+                    <Form> 
+                        <FormItem 
+                        className="sb_admin-user__password-reset"
+                        label="Reset Password"
+                        help="Must contain a Capital Letter, Number, Special Character (!@#$%&*?|) and be atleast 8 characters long." >
+                            <Input 
+                                prefix={<Icon type="key" />} 
+                                placeholder="Reset Password" 
+                                type="password"
+                                onChange={this.handleChange} 
+                                value={this.state.password} 
+                                name="password" />
+                        </FormItem>
+                        <FormItem
+                            className="sb_admin-user__reset-password-button">
+                            <Button 
+                                type="primary" 
+                                htmlType="submit" 
+                                onClick={this.handleResetPasswordSubmit}>
+                                Reset Password
+                            </Button>
+                        </FormItem>
+                    </Form>
+                    <Form> 
+                        <FormItem className="sb_admin-user__remove-account-button">
+                            <Button 
+                                // onClick={this.handleRemoveAccount}
+                                type="danger" 
+                                htmlType="submit"
+                                onClick={this.handleRemoveAccount}>
+                                DELETE ACCOUNT
+                            </Button>
+                        </FormItem>
+                    </Form>
+                </div>
+                <div className="sb_admin-user__activity-container">
+                    <h3> User Activity</h3>
+                    <Table 
+                        className="sb_admin-user__activity-table"
+                        pagination={false}
+                        dataSource={this.state.activity.log}
+                        columns={columns}/>
+                </div>
+            </div>
+            <Modal
+            title="DELETE ACCOUNT CONFIRMATION"
+            visible={this.state.modalVisible}
+            footer={[
+                <Button key="back" onClick={this.handleRemoveAccountCancel}>CANCEL</Button>,
+                <Button key="submit" type="danger" onClick={this.handleRemoveAccountSubmit}>
+                DELETE
+                </Button>,
+            ]}
+            >
+                <Form onSubmit={this.handleRemoveAccountSubmit} name="removeAccount" className="login-form">
+                    <FormItem 
+                        label="Confirm Email: "
+                        className="sb_profile__input">
+                        <Input 
+                            onChange={this.handleChange} 
+                            value={this.state.confirmEmail} 
+                            name="confirmEmail" 
+                            placeholder="Confirm Email Address" />
+                    </FormItem>
+                </Form>
+            </Modal>
+            </>
+        );
+
         return(
             <Observer>
-            {() => 
+            {() =>
                 <>
-                    <div className="sb_admin-user__content-container">
-                        <div className="sb_admin-user__personal-info-container">
-                            <h3 className="sb_admin-user__personal-info-header">Personal Information</h3>
-                            <h5> Email: <span className="sb_admin-user__content">{this.state.email}</span></h5>
-                            <h5>ID: <span className="sb_admin-user__content">{this.state.user_id}</span> </h5>
-                            <h5>Name: <span className="sb_admin-user__content">{this.state.first_name} {this.state.last_name}</span></h5>
-                            <h5>Username: <span className="sb_admin-user__content">{this.state.username}</span> </h5>
-                            <h5>Phone: <span className="sb_admin-user__content">{this.state.phone}</span></h5>
-                            <h5>Account Created: <span className="sb_admin-user__content">{moment(this.state.created_at).format("llll")}</span> </h5>
-                            <h5>Last Login: <span className="sb_admin-user__content">{moment(this.state.last_login).format("llll")}</span> </h5>
-                            <h3 className="sb_admin-user__status-header">Status / Permissions</h3>
-                            <h5>Admin: <span className="sb_admin-user__content">{this.state.is_admin ? <Switch checked={true} onChange={this.toggleUserAdmin} /> : <Switch checked={false} onChange={this.toggleUserAdmin}/>}</span> </h5> 
-                            <h5>Active: <span className="sb_admin-user__content">{this.state.is_active ? <Switch checked={true} onChange={this.toggleUserActive} /> : <Switch checked={false} onChange={this.toggleUserActive}/>}</span></h5>
-                            <h3 className="sb_admin-user__password-header" >Password Reset</h3>
-                            <Form> 
-                                <FormItem 
-                                className="sb_admin-user__password-reset"
-                                label="Reset Password"
-                                help="Must contain a Capital Letter, Number, Special Character (!@#$%&*?|) and be atleast 8 characters long." >
-                                    <Input 
-                                        prefix={<Icon type="key" />} 
-                                        placeholder="Reset Password" 
-                                        type="password"
-                                        onChange={this.handleChange} 
-                                        value={this.state.password} 
-                                        name="password" />
-                                </FormItem>
-                                <FormItem
-                                    className="sb_admin-user__reset-password-button">
-                                    <Button 
-                                        type="primary" 
-                                        htmlType="submit" 
-                                        onClick={this.handleResetPasswordSubmit}>
-                                        Reset Password
-                                    </Button>
-                                </FormItem>
-                            </Form>
-                            <Form> 
-                                <FormItem className="sb_admin-user__remove-account-button">
-                                    <Button 
-                                        // onClick={this.handleRemoveAccount}
-                                        type="danger" 
-                                        htmlType="submit"
-                                        onClick={this.handleRemoveAccount}>
-                                        DELETE ACCOUNT
-                                    </Button>
-                                </FormItem>
-                            </Form>
-                        </div>
-                        <div className="sb_admin-user__activity-container">
-                            <h3> User Activity</h3>
-                            <Table 
-                                className="sb_admin-user__activity-table"
-                                pagination={false}
-                                columns={columns}/>
-                        </div>
-                    </div>
-                    <Modal
-                    title="DELETE ACCOUNT CONFIRMATION"
-                    visible={this.state.modalVisible}
-                    footer={[
-                        <Button key="back" onClick={this.handleRemoveAccountCancel}>CANCEL</Button>,
-                        <Button key="submit" type="danger" onClick={this.handleRemoveAccountSubmit}>
-                        DELETE
-                        </Button>,
-                    ]}
-                    >
-                        <Form onSubmit={this.handleRemoveAccountSubmit} name="removeAccount" className="login-form">
-                            <FormItem 
-                                label="Confirm Email: "
-                                className="sb_profile__input">
-                                <Input 
-                                    onChange={this.handleChange} 
-                                    value={this.state.confirmEmail} 
-                                    name="confirmEmail" 
-                                    placeholder="Confirm Email Address" />
-                            </FormItem>
-                        </Form>
-                    </Modal>
+                    {this.state.loading && <ComponentFactory.Loading />} 
+                    {!this.state.loading && content}
                 </>
-                }  
+                }
             </Observer>
         );
     }

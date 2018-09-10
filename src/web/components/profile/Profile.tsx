@@ -43,18 +43,19 @@ export class ProfileForm extends BaseComponent<ProfileProps, ProfileState> {
             const data = {
                 username: value
             };
-            this.appStore.dataStore.checkUsername(data)
-            .then((valid) => {
-                if (valid) {
-                    this.setState({validUsername: true});
-                } else {
-                    this.setState({validUsername: false});
-                }
+            if (this.appStore.dataStore.authorizedUser.username !== value)
+                this.appStore.dataStore.checkUsername(data)
+                .then((valid) => {
+                    if (valid) {
+                        this.setState({validUsername: true});
+                    } else {
+                        this.setState({validUsername: false});
+                    }
 
-            })
-            .catch((err) => {
-                this.appStore.showMessage("error", "Something went wrong. Unable to validate Username");
-            });
+                })
+                .catch((err) => {
+                    this.appStore.showMessage("error", "Something went wrong. Unable to validate Username");
+                });
         }
     }
 
@@ -69,14 +70,15 @@ export class ProfileForm extends BaseComponent<ProfileProps, ProfileState> {
             phone: this.state.phone,
             user_id: this.appStore.dataStore.authorizedUser.user_id
         };
-        appStore.dataStore.updateUserProfile(userProfile)
-        .then(() => {
-            this.appStore.showMessage("success", "Successfully Updated Profile.");
-        })
-        .catch((err: any) => {
-            console.error(err);
-            this.appStore.showMessage("error", err);
-        });
+        if (this.state.validUsername)
+            appStore.dataStore.updateUserProfile(userProfile)
+            .then(() => {
+                this.appStore.showMessage("success", "Successfully Updated Profile.");
+            })
+            .catch((err: any) => {
+                console.error(err);
+                this.appStore.showMessage("error", err);
+            });
     }
 
     validatePassword(password: string | undefined) {

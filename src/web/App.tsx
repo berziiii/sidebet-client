@@ -43,6 +43,13 @@ class App extends React.Component<AppProps, AppState> {
             this.setState({isLoading: false});
             if (_.isNil(this.appStore.dataStore.authorizedUser))
                 this.appStore.dataStore.clearUserAndToken();
+            else {
+                if (!this.appStore.dataStore.authorizedUser.is_active) {
+                    this.appStore.dataStore.clearUserAndToken();
+                    this.appStore.navigateTo("/signin");
+                    this.appStore.showMessage("error", "Account Locked or Inactive. Please contact an Administrator.");
+                }
+            }
         })
         .catch((err) => {
             console.error(err);

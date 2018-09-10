@@ -76,9 +76,9 @@ export class AdminUsersList extends BaseComponent<AdminUsersListProps, AdminUser
                 render: (text: any, row: any, index: any) => {
                     return ( <Button 
                                 onClick={() => this.handleEditUserClick(row)}
-                                className="sb_admin-users__edit-user" 
+                                className="sb_admin-users__view-user" 
                                 shape="circle">
-                                <Icon type="edit"/>
+                                <Icon type="eye" />
                             </Button> );
                 }
             }

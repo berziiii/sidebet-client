@@ -56,7 +56,7 @@
 .sb_admin-user__content-container {
   width: calc(100vw - 200px);
   max-width: 100vw;
-  max-height: 100vh;
+  max-height: calc(100vh - 120px);
   margin: 0 auto;
   display: flex;
   margin: 25px;
@@ -66,7 +66,7 @@
 .sb_admin-user__personal-info-container {
   width: 600px;
   background: $white;
-  min-height: 100vh;
+  min-height: 100%;
   text-align: left;
   padding: 0 5px;
   border-right: solid 5px $dark-blue;
@@ -77,13 +77,14 @@
 
 .sb_admin-user__activity-container {
   width: 100%;
-  min-height: 100vh;
-  max-height: 100vh;
+  min-height: 100%;
+  max-height: 100%;
+  overflow-y: scroll;
   background: $white;
   .ant-table-body {
-    max-height: 90vh!important;
-    overflow-y: scroll;
-    border-bottom: .5px solid $dark-blue;
+    // max-height: 100;
+    // overflow-y: scroll;
+    // border-bottom: .5px solid $dark-blue;
   }
 }
 

@@ -200,6 +200,19 @@ export class DataStore implements Models.Store {
         });
     }
 
+    @action
+    getAllWagers() {
+        return new Promise((resolve, reject) => {
+            APIClient.getAllWagers()
+            .then((wagers: any) => {
+                resolve(this.processResponse(wagers));
+            })
+            .catch((err: any) => {
+                reject(err);
+            });
+        });
+    }
+
     // ********************* //
     // ******* ADMIN ******* //
     // ********************* //

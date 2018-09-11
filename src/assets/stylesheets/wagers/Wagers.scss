@@ -1,6 +1,143 @@
 .sb_wagers__component-container {
   height: 100%;
   width: 100%;
-  max-width: 1200px;
+  // max-width: 1200px;
   margin: 0 auto;
+  background: $grey;
+}
+
+.sb_app__wagers-list-container {
+  background: $grey;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  width: 100%;
+  max-width: 1500px;
+  margin: 0 auto;
+  max-height: 100%;
+  overflow-y: scroll;
+  padding: 15px 10px;
+}
+
+.sb_wagers__wager-card-container {
+  width: 100%;
+  flex: 0 50%;
+  min-height: 250px;
+  padding: 10px;
+}
+
+.sb_wagers__wager-card {
+  margin: 0 auto;
+  width: 90%;
+  border-radius: 5px;
+  min-height: 250px;
+  background: $white;
+  box-shadow: 0px 0px 31px 1px rgba(0,0,0,0.43);
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+.sb_wagers__wager-title {
+  background: $dark-blue;
+  color: $white;
+  padding: 25px 0px;
+  text-transform: uppercase;
+  font-weight: bold;
+}
+
+.sb_wagers__wager-description {
+  color: $dark-blue;
+  padding: 50px 25px;
+  text-transform: uppercase;
+  font-weight: 400;
+  text-align: center;
+  margin: 0!important;
+  border-bottom: 1px solid $grey;
+}
+
+.sb_wager__wager-metainfo-container{
+  width: 100%;
+  display: inline-block;
+}
+
+.sb_wager__wager-info {
+  width: 25%;
+  max-width: 25%;
+  display: inline-block;
+  padding: 20px 0px;
+  &:not(:last-child) {
+    border-right: .5px solid $grey;
+  }
+}
+
+.sb_wagers__add-wager-button {
+  position: fixed;
+  bottom: 40px;
+  right: 20px;
+  width: 75px;
+  height: 75px;
+  border-radius: 75px;
+  background: $red;
+  color: $white;
+  border: none;
+  .sb_wagers__add-wager-icon {
+    font-size: 2em;
+  }
+  &:hover, &:visited, &:focus {
+    background: $red;
+    color: $white;
+    border: none;
+  }
+  &:hover {
+    transform: scale(1.1);
+  }
+}
+
+.sb_wagers__add-wager-drawer {
+  .ant-drawer-content-wrapper {
+    min-width: 500px;
+  }
+  .ant-drawer-wrapper-body {
+    background: $white;
+    color: $dark-blue;
+    padding: 10px 5px;
+  }
+}
+
+.sb_wagers__add-wager-input-label {
+  margin: 0px;
+}
+
+.sb_wagers__add-wager-input {
+  width: 100%;
+}
+
+.sb_wagers__submit-button {
+  text-align: center;
+}
+
+.sb_wagers__add-option-button {
+  text-align: center;
+}
+
+.sb_wagers__option-input {
+  width: 90%;
+}
+.sb_wagers__option-remove-icon {
+  margin-left: 10px;
+  font-size: 1.25em;
+}
+
+@media(max-width: 900px) {
+  .sb_app__wagers-list-container {
+    display: block;
+  }
+  .sb_wagers__wager-card-container {
+    display: block;
+    width: 100%;
+  }
+  .sb_wagers__wager-card {
+    width: 100%;
+  }
 }

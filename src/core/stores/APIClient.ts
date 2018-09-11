@@ -40,6 +40,10 @@ export class APIClient {
         return result;
     }
 
+    // ********************* //
+    // ******* USERS ******* //
+    // ********************* //
+
     static fetchUser() {
         return new Promise((resolve, reject) => {
             const {client, config} = this.createClient();
@@ -158,6 +162,25 @@ export class APIClient {
             return client.post(url, username, config)
             .then((user: AxiosResponse) => {
                 resolve(user);
+            })
+            .catch((err) => {
+                console.error(err);
+                reject(err.response.data);
+            });
+        });
+    }
+
+    // ********************** //
+    // ******* WAGERS ******* //
+    // ********************** //
+
+    static getAllWagers() {
+        return new Promise((resolve, reject) => {
+            const {client, config} = this.createClient();
+            const url = `/api/wagers`;
+            return client.get(url, config)
+            .then((wagers: AxiosResponse) => {
+                resolve(wagers);
             })
             .catch((err) => {
                 console.error(err);

@@ -1,6 +1,7 @@
 .sb_loading__main-container {
   width: 100%;
-  min-height: 100vh;
+  min-height: calc(100vh - 110px);
+  max-height: calc(100vh - 110px);
   height: auto;
   display: flex;
   justify-content: center;

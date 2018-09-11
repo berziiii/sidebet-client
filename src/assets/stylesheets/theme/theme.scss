@@ -16,7 +16,7 @@ body {
   min-height: calc(100vh - 110px);
   height: auto;
   margin: 20px;
-  background: $white;
+  background: $grey;
   display: flex;
 }
 
@@ -29,5 +29,7 @@ body {
 @media (max-width: 768px) {
   .sb_app__container {
     margin-top: 50px;
+    height: auto;
+    max-height: unset;
   }
 }

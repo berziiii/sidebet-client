@@ -189,6 +189,38 @@ export class APIClient {
         });
     }
 
+    static createWager(wagerData: any) {
+        return new Promise((resolve, reject) => {
+            const {client, config} = this.createClient();
+            const url = `/api/wagers/create`;
+            return client.post(url, wagerData, config)
+            .then((wager: AxiosResponse) => {
+                resolve(wager);
+            })
+            .catch((err) => {
+                console.error(err);
+                reject(err.response.data);
+            });
+        });
+    }
+
+    static createWagerOption(optionData: any) {
+        return new Promise((resolve, reject) => {
+            debugger;
+            const {client, config} = this.createClient();
+            const url = `/api/wagers/${optionData.wager_id}/options/create`;
+            delete optionData.wager_id;
+            return client.post(url, optionData, config)
+            .then((wager: AxiosResponse) => {
+                resolve(wager);
+            })
+            .catch((err) => {
+                console.error(err);
+                reject(err.response.data);
+            });
+        });
+    }
+
     // ********************* //
     // ******* ADMIN ******* //
     // ********************* //

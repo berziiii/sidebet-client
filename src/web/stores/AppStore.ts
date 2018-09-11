@@ -95,4 +95,15 @@ export class AppStore {
                 /[!@#$%&*?]/g.test(password) &&
                 password.length >= 8;
     }
+
+    public validateNewWager(wagerData: any) {
+        const keys = Object.keys(wagerData);
+        let validDataset = true;
+        _.each(keys, (key: any) => {
+            if (wagerData[key] === "" || wagerData[key] === undefined) {
+                validDataset = false;
+            }
+        });
+        return validDataset;
+    }
 }

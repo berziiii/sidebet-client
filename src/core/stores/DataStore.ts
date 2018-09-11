@@ -200,12 +200,42 @@ export class DataStore implements Models.Store {
         });
     }
 
+    // ********************* //
+    // ******* WAGER ******* //
+    // ********************* //
+
     @action
     getAllWagers() {
         return new Promise((resolve, reject) => {
             APIClient.getAllWagers()
             .then((wagers: any) => {
                 resolve(this.processResponse(wagers));
+            })
+            .catch((err: any) => {
+                reject(err);
+            });
+        });
+    }
+
+    @action
+    createWager(wagerData: any) {
+        return new Promise((resolve, reject) => {
+            APIClient.createWager(wagerData)
+            .then((wager: any) => {
+                resolve(this.processResponse(wager));
+            })
+            .catch((err: any) => {
+                reject(err);
+            });
+        });
+    }
+
+    @action
+    createWagerOption(optionData: any) {
+        return new Promise((resolve, reject) => {
+            APIClient.createWagerOption(optionData)
+            .then((wager: any) => {
+                resolve(this.processResponse(wager));
             })
             .catch((err: any) => {
                 reject(err);

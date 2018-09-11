@@ -26,6 +26,10 @@ body {
   height: auto;
 }
 
+.input-error {
+  border-color: $red !important;
+}
+
 @media (max-width: 768px) {
   .sb_app__container {
     margin-top: 50px;

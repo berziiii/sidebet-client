@@ -45,6 +45,8 @@ export class WagersList extends BaseComponent<WagersListProps, WagersListState> 
         this.addOption = this.addOption.bind(this);
         this.removeOption = this.removeOption.bind(this);
         this.handleOptionChange = this.handleOptionChange.bind(this);
+        this.createWager = this.createWager.bind(this);
+        this.createWagerOptions = this.createWagerOptions.bind(this);
     }
 
     componentDidMount() {
@@ -102,15 +104,51 @@ export class WagersList extends BaseComponent<WagersListProps, WagersListState> 
         });
     }
 
-    handleBettingClosesChange(d: any, dataString: any) {
+    handleBettingClosesChange(d: any, dateStamp: any) {
+        const timestame = moment(dateStamp).format();
         this.setState({
-            closes_at: moment(dataString).format()
+            closes_at: timestame
         });
     }
 
-    handleBetExpiresAt(d: any, dataString: any) {
+    handleBetExpiresAt(d: any, dateStamp: any) {
+        const timestame = moment(dateStamp).format();
         this.setState({
-            expires_at: moment(dataString).format()
+            expires_at: timestame
+        });
+    }
+
+    createWagerOptions(createdWager: any) {
+        const PromiseChain: any = [];
+        _.each(this.state.options, (option: any) => {
+            const optionData = {
+                wager_id: createdWager.wager_id,
+                owner_id: this.appStore.dataStore.authorizedUser.user_id,
+                option_text: option.value,
+            };
+            PromiseChain.push(this.appStore.dataStore.createWagerOption(optionData));
+        });
+        return Promise.all(PromiseChain)
+                .then(() => {
+                    return createdWager;
+                })
+                .catch((err: any) => {
+                    console.error(err);
+                    this.appStore.showMessage("error", "Something went wrong. Unable to add Wager Options");
+                });
+    }
+
+    createWager(wagerData: any) {
+        this.appStore.dataStore.createWager(wagerData)
+        .then((createdWager: any) => {
+            return this.createWagerOptions(createdWager);
+        })
+        .then((createdWager: any) => {
+            this.appStore.navigateTo(`/wagers/${createdWager.wager_id}`);
+        })
+        .catch((err: any) => {
+            console.error(err);
+            this.appStore.showMessage("error", "Something went wrong. Unable to create Wager");
         });
     }
 
@@ -120,15 +158,23 @@ export class WagersList extends BaseComponent<WagersListProps, WagersListState> 
             wager_title: this.state.wager_title,
             wager_description: this.state.wager_description,
             share_type: this.state.share_type,
-            wager_prize: this.state.wager_prize,
             wager_prize_type: this.state.wager_prize_type,
             wager_type: this.state.wager_type,
-            wager_buy_in: this.state.wager_buy_in,
             closes_at: this.state.closes_at,
             expires_at: this.state.expires_at,
-            // options: this.state.options,
         };
-        
+        if (this.state.wager_prize_type === "Monetary")
+            newWagerData["wager_buy_in"] = this.state.wager_buy_in;
+        else 
+            newWagerData["wager_prize"] = this.state.wager_prize;
+        if (this.appStore.validateNewWager(newWagerData)) {
+            this.createWager(newWagerData);
+        } else {
+            this.appStore.showMessage("error", "Please Complete All Form fields.");
+            if (keys.length < 2) 
+                this.appStore.showMessage("error", "Must have at Minimum 2 Wager Options");
+        }
+
     }
 
     addOption() {
@@ -181,22 +227,22 @@ export class WagersList extends BaseComponent<WagersListProps, WagersListState> 
         }
         const formItems = keys.map((k: any) => {
             return (
-                <FormItem
-                key={k}>
-                    <Input 
-                        name={k.option}
-                        value={k.value}
-                        onChange={this.handleOptionChange}
-                        placeholder="Wager Option" 
-                        className="sb_wagers__option-input"/>
-                    {keys.length > 1 ? (
-                        <Icon
-                            className="dynamic-delete-button sb_wagers__option-remove-icon"
-                            type="minus-circle-o"
-                            onClick={() => this.removeOption(k)}
-                        />
-                    ) : null}
-                </FormItem>
+                    <FormItem
+                    key={k}>
+                        <Input 
+                            name={k.option}
+                            value={k.value}
+                            onChange={this.handleOptionChange}
+                            placeholder="Wager Option" 
+                            className="sb_wagers__option-input"/>
+                        {keys.length > 1 ? (
+                            <Icon
+                                className="dynamic-delete-button sb_wagers__option-remove-icon"
+                                type="minus-circle-o"
+                                onClick={() => this.removeOption(k)}
+                            />
+                        ) : null}
+                    </FormItem>
             );
           });
 
@@ -210,6 +256,7 @@ export class WagersList extends BaseComponent<WagersListProps, WagersListState> 
                 className="sb_wagers__add-wager-drawer"
             >
                 <Form onSubmit={this.submitCreateWager}>
+
                     <FormItem>
                         <h5 className="sb_wagers__add-wager-input-label">Wager Title:</h5>
                         <Input 
@@ -219,6 +266,7 @@ export class WagersList extends BaseComponent<WagersListProps, WagersListState> 
                             onChange={this.handleTextInputChange}
                             className="sb_wagers__add-wager-input"/>
                     </FormItem>
+
                     <FormItem>
                         <h5 className="sb_wagers__add-wager-input-label">Wager Description:</h5>
                         <TextArea 
@@ -227,6 +275,7 @@ export class WagersList extends BaseComponent<WagersListProps, WagersListState> 
                             onChange={this.handleTextInputChange}
                             className="sb_wagers__add-wager-input"/>
                     </FormItem>
+
                     <FormItem>
                         <h5 className="sb_wagers__add-wager-input-label">Wager Type:</h5>
                         <Select defaultValue={this.state.wager_type} className="sb_wagers__add-wager-input">
@@ -236,6 +285,7 @@ export class WagersList extends BaseComponent<WagersListProps, WagersListState> 
                             <Option value="Prop Bet / Specials">Prop Bet / Specials</Option>
                         </Select>
                     </FormItem>
+
                     <FormItem>
                         <h5 className="sb_wagers__add-wager-input-label">Share Type:</h5>
                         <Select defaultValue={this.state.share_type} disabled className="sb_wagers__add-wager-input">
@@ -243,6 +293,7 @@ export class WagersList extends BaseComponent<WagersListProps, WagersListState> 
                             <Option value="Private">Private</Option>
                         </Select>
                     </FormItem>
+
                     <FormItem>
                         <h5 className="sb_wagers__add-wager-input-label">Wager Prize Type:</h5>
                         <Select 
@@ -254,7 +305,7 @@ export class WagersList extends BaseComponent<WagersListProps, WagersListState> 
                         </Select>
                     </FormItem>
 
-                    {MonetaryPrize && 
+                    {MonetaryPrize &&
                     <FormItem>
                         <h5 className="sb_wagers__add-wager-input-label">Wager Buy In:</h5>
                         <Input 
@@ -266,7 +317,7 @@ export class WagersList extends BaseComponent<WagersListProps, WagersListState> 
                             name="wager_buy_in"/>
                     </FormItem>}
 
-                    {!MonetaryPrize && 
+                    {!MonetaryPrize &&
                     <FormItem>
                         <h5 className="sb_wagers__add-wager-input-label">Wager Prize:</h5>
                         <Input 
@@ -276,25 +327,29 @@ export class WagersList extends BaseComponent<WagersListProps, WagersListState> 
                             value={this.state.wager_prize}
                             name="wager_prize"/>
                     </FormItem>}
-                    <FormItem>
-                        <h5 className="sb_wagers__add-wager-input-label">Wager Expires at:</h5>
-                        <DatePicker 
-                            className="sb_wagers__add-wager-input"
-                            onChange={() => this.handleBetExpiresAt}
-                            placeholder="Wager Expires at..." />
-                    </FormItem>
+
                     <FormItem>
                         <h5 className="sb_wagers__add-wager-input-label">Bets Close at:</h5>
                         <DatePicker 
                             className="sb_wagers__add-wager-input"
-                            onChange={() => this.handleBettingClosesChange}
+                            onChange={(d, ds) => this.handleBettingClosesChange(d, ds)}
                             placeholder="Betting Closes at..." />
                     </FormItem>
-                    <h5 className="sb_wagers__add-wager-input-label">Wager Options: </h5>
+
+                    <FormItem>
+                        <h5 className="sb_wagers__add-wager-input-label">Wager Expires at:</h5>
+                        <DatePicker 
+                            className="sb_wagers__add-wager-input"
+                            onChange={(d, ds) => this.handleBetExpiresAt(d, ds)}
+                            placeholder="Wager Expires at..." />
+                    </FormItem>
+
+                    <h5 className="sb_wagers__add-wager-input-label">Wager Options (2-3 Options): </h5>
                     {formItems}
 
                     {keys.length < 3 &&
-                    <FormItem className="sb_wagers__add-option-button">
+                    <FormItem 
+                        className="sb_wagers__add-option-button">
                         <Button type="dashed" onClick={this.addOption} style={{ width: "60%" }}>
                             <Icon type="plus" /> Add Wager Option
                         </Button>

@@ -22,4 +22,5 @@ export interface WagerItemState {
     last_modified?: any | undefined;
     owner_id?: any | undefined;
     userBet?: any | undefined;
+    visibleDrawer?: any | undefined;
 }

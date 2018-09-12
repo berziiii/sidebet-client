@@ -1,17 +1,24 @@
 import * as React from "react";
 import * as _ from "lodash";
 import {Observer} from "mobx-react";
-import { Icon, Button } from "antd";
+import { Icon, Button, Drawer, Form, Input, DatePicker, Select } from "antd";
 import {BaseComponent} from "../BaseComponent";
 import {WagerItemProps, WagerItemState} from "./WagerItemInterface";
 import * as moment from "moment";
 import * as ComponentFactory from "../ComponentFactory";
+import TextArea from "antd/lib/input/TextArea";
+
+const FormItem = Form.Item;
+const Option = Select.Option;
+let uuid = 1;
+let keys: any = [];
 
 export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
     constructor(props: WagerItemProps) {
         super(props);
         this.state = {
             loading: true,
+            visibleDrawer: false,
             wager_id: undefined,
             wager_title: undefined,
             bets: [],
@@ -32,9 +39,22 @@ export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
         this.handleBet = this.handleBet.bind(this);
         this.setWagerState = this.setWagerState.bind(this);
         this.removeBet = this.removeBet.bind(this);
+        this.onClose = this.onClose.bind(this);
+        this.handleEditWager = this.handleEditWager.bind(this);
+        this.handleWagerPrizeChange = this.handleWagerPrizeChange.bind(this);
+        this.handleBettingClosesChange = this.handleBettingClosesChange.bind(this);
+        this.handleTextInputChange = this.handleTextInputChange.bind(this);
+        this.submitEditWager = this.submitEditWager.bind(this);
+        this.addOption = this.addOption.bind(this);
+        this.removeOption = this.removeOption.bind(this);
+        this.handleOptionChange = this.handleOptionChange.bind(this);
+        // this.editWager = this.editWager.bind(this);
+        // this.editWagerOption = this.editWagerOption.bind(this);
     }
 
     componentDidMount() {
+        uuid = 1;
+        keys = [];
         const { match } = this.props.match;
         const wagerId = match.params.wagerId;
 
@@ -70,7 +90,7 @@ export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
             expires_at: wager.expires_at,
             options: wager.options,
             owner: wager.owner.username,
-            owner_id: wager.owner.owner_id,
+            owner_id: wager.owner.user_id,
             created_at: wager.created_at,
             last_modified: wager.last_modified,
             userBet: userBet
@@ -126,9 +146,114 @@ export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
             this.removeBet();
     }
 
+    handleTextInputChange(e: any) {
+        const target = e.target;
+        const name = target.name;
+        const value = target.value;
+
+        this.setState({
+            [name]: value
+        });
+    }
+
+    onClose() {
+        this.setState({
+            visibleDrawer: false,
+        });
+    }
+
+    handleEditWager(e: any) {
+        this.setState({visibleDrawer: true});
+    }
+
+    handleWagerPrizeChange(value: any) {
+        this.setState({
+            wager_prize_type: value,
+            wager_buy_in: "",
+            wager_prize: ""
+        });
+    }
+
+    handleBettingClosesChange(d: any, dateStamp: any) {
+        const timestame = moment(dateStamp).format();
+        this.setState({
+            closes_at: timestame
+        });
+    }
+
+    handleBetExpiresAt(d: any, dateStamp: any) {
+        const timestame = moment(dateStamp).format();
+        this.setState({
+            expires_at: timestame
+        });
+    }
+
+    submitEditWager(e: any) {
+        // e.preventDefault();
+        // const newWagerData = {
+        //     wager_title: this.state.wager_title,
+        //     wager_description: this.state.wager_description,
+        //     share_type: this.state.share_type,
+        //     wager_prize_type: this.state.wager_prize_type,
+        //     wager_type: this.state.wager_type,
+        //     closes_at: this.state.closes_at,
+        //     expires_at: this.state.expires_at,
+        // };
+        // if (this.state.wager_prize_type === "Monetary")
+        //     newWagerData["wager_buy_in"] = this.state.wager_buy_in;
+        // else 
+        //     newWagerData["wager_prize"] = this.state.wager_prize;
+        // if (this.appStore.validateNewWager(newWagerData)) {
+        //     this.createWager(newWagerData);
+        // } else {
+        //     this.appStore.showMessage("error", "Please Complete All Form fields.");
+        //     if (keys.length < 2) 
+        //         this.appStore.showMessage("error", "Must have at Minimum 2 Wager Options");
+        // }
+
+    }
+
+    addOption() {
+        const option = `option${uuid}`;
+        keys.push({
+            option: option,
+            value: ""
+        });
+        uuid++;
+        this.setState({
+            options: keys
+        });
+    }
+
+    removeOption(k: any) {
+        if (keys.length === 1) {
+            return;
+        }
+        keys = keys.filter((item: any) => item.option !== k.option);
+        this.setState({
+            options: keys
+        });
+    }
+
+    handleOptionChange(e: any) {
+        const target = e.target;
+        const name = target.name;
+        const value = target.value;
+        keys = keys.map((key: any) => {
+            if (key.option === name) {
+                key.value = value;
+                return key;
+            }
+            return key;
+        });
+        this.setState({
+            options: keys
+        });
+    }
+
     render() {
         const MonetaryPrize = this.state.wager_prize_type === "Monetary";
-
+        const userIsOwner = this.state.owner_id === this.appStore.dataStore.authorizedUser.user_id;
         const ownerInitial = () => {
             if (!_.isNil(this.state.owner))
                 return this.state.owner.charAt(0).toUpperCase();
@@ -203,6 +328,134 @@ export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
             );
         });
 
+        const drawer = (
+            <Drawer
+                title="Create a Wager"
+                placement={"right"}
+                closable={false}
+                onClose={this.onClose}
+                visible={this.state.visibleDrawer}
+                className="sb_wagers__add-wager-drawer"
+            >
+                <Form onSubmit={this.submitEditWager}>
+                    <FormItem>
+                        <h5 className="sb_wagers__add-wager-input-label">Wager Title:</h5>
+                        <Input 
+                            type="text" 
+                            value={this.state.wager_title} 
+                            name="wager_title"
+                            onChange={this.handleTextInputChange}
+                            className="sb_wagers__add-wager-input"/>
+                    </FormItem>
+
+                    <FormItem>
+                        <h5 className="sb_wagers__add-wager-input-label">Wager Description:</h5>
+                        <TextArea 
+                            value={this.state.wager_description} 
+                            name="wager_description"
+                            onChange={this.handleTextInputChange}
+                            className="sb_wagers__add-wager-input"/>
+                    </FormItem>
+
+                    <FormItem>
+                        <h5 className="sb_wagers__add-wager-input-label">Wager Type:</h5>
+                        <Select defaultValue={this.state.wager_type} className="sb_wagers__add-wager-input">
+                            <Option value="Head to Head">Head to Head</Option>
+                            <Option value="Over / Under">Over / Under</Option>
+                            <Option value="Futures / Outright">Futures / Outright</Option>
+                            <Option value="Prop Bet / Specials">Prop Bet / Specials</Option>
+                        </Select>
+                    </FormItem>
+
+                    <FormItem>
+                        <h5 className="sb_wagers__add-wager-input-label">Share Type:</h5>
+                        <Select defaultValue={this.state.share_type} disabled className="sb_wagers__add-wager-input">
+                            <Option value="Public">Public</Option>
+                            <Option value="Private">Private</Option>
+                        </Select>
+                    </FormItem>
+
+                    <FormItem>
+                        <h5 className="sb_wagers__add-wager-input-label">Wager Prize Type:</h5>
+                        <Select 
+                            defaultValue={this.state.wager_prize_type} 
+                            className="sb_wagers__add-wager-input"
+                            onChange={this.handleWagerPrizeChange}
+                            >
+                            <Option value="Monetary">Monetary</Option>
+                            <Option value="Non-Monetary">Non-Monetary</Option>
+                        </Select>
+                    </FormItem>
+
+                    {MonetaryPrize &&
+                    <FormItem>
+                        <h5 className="sb_wagers__add-wager-input-label">Wager Buy In:</h5>
+                        <Input 
+                            prefix={"$"}
+                            className="sb_wagers__add-wager-input"
+                            type="number"
+                            onChange={this.handleTextInputChange}
+                            value={this.state.wager_buy_in}
+                            name="wager_buy_in"/>
+                    </FormItem>}
+
+                    {!MonetaryPrize &&
+                    <FormItem>
+                        <h5 className="sb_wagers__add-wager-input-label">Wager Prize:</h5>
+                        <Input 
+                            className="sb_wagers__add-wager-input"
+                            type="text"
+                            onChange={this.handleTextInputChange}
+                            value={this.state.wager_prize}
+                            name="wager_prize"/>
+                    </FormItem>}
+
+                    <FormItem>
+                        <h5 className="sb_wagers__add-wager-input-label">Bets Close at:</h5>
+                        <DatePicker 
+                            showTime
+                            format="YYYY-MM-DD HH:mm:ss"
+                            defaultValue={moment(this.state.closes_at, "YYYY-MM-DD HH:mm:ss")}
+                            className="sb_wagers__add-wager-input"
+                            onChange={(d, ds) => this.handleBettingClosesChange(d, ds)}
+                            placeholder="Betting Closes at..." />
+                    </FormItem>
+
+                    <FormItem>
+                        <h5 className="sb_wagers__add-wager-input-label">Wager Expires at:</h5>
+                        <DatePicker 
+                            showTime
+                            format="YYYY-MM-DD HH:mm:ss"
+                            defaultValue={moment(this.state.expires_at, "YYYY-MM-DD HH:mm:ss")}
+                            className="sb_wagers__add-wager-input"
+                            onChange={(d, ds) => this.handleBetExpiresAt(d, ds)}
+                            placeholder="Wager Expires at..." />
+                    </FormItem>
+
+                    <h5 className="sb_wagers__add-wager-input-label">Wager Options (2-3 Options): </h5>
+                    {/* {formItems} */}
+
+                    {keys.length < 3 &&
+                    <FormItem 
+                        className="sb_wagers__add-option-button">
+                        <Button type="dashed" onClick={this.addOption} style={{ width: "60%" }}>
+                            <Icon type="plus" /> Add Wager Option
+                        </Button>
+                    </FormItem>}
+
+                    <FormItem className="sb_wagers__submit-button">
+                        <Button 
+                            onClick={this.handleEditWager}
+                            type="primary" 
+                            htmlType="submit" >
+                            Create Wager
+                        </Button>
+                    </FormItem>
+
+                </Form>
+            </Drawer>
+        );
+
         const content = (
             <div className="sb_wager__main-container">
                 <div className="sb_wager__card-container">
@@ -272,6 +525,18 @@ export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
                         </div>
                     </div>
                 </div>
+
+                {userIsOwner && 
+                <Button 
+                    onClick={this.handleEditWager}
+                    className="sb_wager__edit-wager-button">
+                    <Icon 
+                        className="sb_wager__edit-wager-icon"
+                        type="edit" />
+                </Button>}
+
+                {drawer}
+
             </div>
         );
 

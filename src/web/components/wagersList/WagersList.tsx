@@ -50,6 +50,8 @@ export class WagersList extends BaseComponent<WagersListProps, WagersListState> 
     }
 
     componentDidMount() {
+        uuid = 1;
+        keys = [];
         this.getWagers()
         .then((wagers: any) => {
             this.setState({
@@ -331,6 +333,8 @@ export class WagersList extends BaseComponent<WagersListProps, WagersListState> 
                     <FormItem>
                         <h5 className="sb_wagers__add-wager-input-label">Bets Close at:</h5>
                         <DatePicker 
+                            showTime
+                            format="YYYY-MM-DD HH:mm:ss"
                             className="sb_wagers__add-wager-input"
                             onChange={(d, ds) => this.handleBettingClosesChange(d, ds)}
                             placeholder="Betting Closes at..." />
@@ -339,6 +343,8 @@ export class WagersList extends BaseComponent<WagersListProps, WagersListState> 
                     <FormItem>
                         <h5 className="sb_wagers__add-wager-input-label">Wager Expires at:</h5>
                         <DatePicker 
+                            showTime
+                            format="YYYY-MM-DD HH:mm:ss"
                             className="sb_wagers__add-wager-input"
                             onChange={(d, ds) => this.handleBetExpiresAt(d, ds)}
                             placeholder="Wager Expires at..." />

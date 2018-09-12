@@ -2,6 +2,7 @@
 export {AdminWagers} from  "../pages/admin/wagers/AdminWagers";
 export {AdminUsers} from  "../pages/admin/users/AdminUsers";
 export {Wagers} from  "../pages/wagers/Wagers";
+export {Wager} from  "../pages/wager/Wager";
 export {Profile} from  "../pages/profile/Profile";
 export {SignIn} from  "../pages/signin/SignIn";
 export {SignUp} from  "../pages/signup/SignUp";
@@ -17,3 +18,4 @@ export {SignInForm} from  "./signin/SignIn";
 export {SignUpForm} from  "./signup/SignUp";
 export {WagersList} from  "./wagersList/WagersList";
 export {WagerCard} from  "./wagerCard/WagerCard";
+export {WagerItem} from  "./wagerItem/WagerItem";

@@ -15,8 +15,8 @@ export class WagerCard extends BaseComponent<WagerCardProps, WagerCardState> {
     componentDidMount() {
     }
 
-    handleWagerSelect(e: any) {
-        debugger;
+    handleWagerSelect(wager: any) {
+        this.appStore.navigateTo(`/wagers/${wager.wager_id}`);
     }
 
     render() {
@@ -27,7 +27,7 @@ export class WagerCard extends BaseComponent<WagerCardProps, WagerCardState> {
                 <>
                     <div className="sb_wagers__wager-card-container">
                         <div className="sb_wagers__wager-card">
-                            <a onClick={this.handleWagerSelect}>
+                            <a onClick={() => this.handleWagerSelect(this.props.wager)}>
                                 <h2 className="sb_wagers__wager-title">{this.props.wager.wager_title}</h2>
                                 <div className="sb_wagers__wager-details">
                                     <p className="sb_wagers__wager-description">{this.props.wager.wager_description}</p>    

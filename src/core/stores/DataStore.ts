@@ -218,6 +218,19 @@ export class DataStore implements Models.Store {
     }
 
     @action
+    getWagerById(wagerId: string) {
+        return new Promise((resolve, reject) => {
+            APIClient.getWagerById(wagerId)
+            .then((wagers: any) => {
+                resolve(this.processResponse(wagers));
+            })
+            .catch((err: any) => {
+                reject(err);
+            });
+        });
+    }
+
+    @action
     createWager(wagerData: any) {
         return new Promise((resolve, reject) => {
             APIClient.createWager(wagerData)
@@ -234,6 +247,19 @@ export class DataStore implements Models.Store {
     createWagerOption(optionData: any) {
         return new Promise((resolve, reject) => {
             APIClient.createWagerOption(optionData)
+            .then((wager: any) => {
+                resolve(this.processResponse(wager));
+            })
+            .catch((err: any) => {
+                reject(err);
+            });
+        });
+    }
+
+    @action
+    enterUserBet(betData: any) {
+        return new Promise((resolve, reject) => {
+            APIClient.enterUserBet(betData)
             .then((wager: any) => {
                 resolve(this.processResponse(wager));
             })

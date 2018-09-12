@@ -189,6 +189,21 @@ export class APIClient {
         });
     }
 
+    static getWagerById(wagerId: string) {
+        return new Promise((resolve, reject) => {
+            const {client, config} = this.createClient();
+            const url = `/api/wagers/${wagerId}`;
+            return client.get(url, config)
+            .then((wagers: AxiosResponse) => {
+                resolve(wagers);
+            })
+            .catch((err) => {
+                console.error(err);
+                reject(err.response.data);
+            });
+        });
+    }
+
     static createWager(wagerData: any) {
         return new Promise((resolve, reject) => {
             const {client, config} = this.createClient();
@@ -206,11 +221,26 @@ export class APIClient {
 
     static createWagerOption(optionData: any) {
         return new Promise((resolve, reject) => {
-            debugger;
             const {client, config} = this.createClient();
             const url = `/api/wagers/${optionData.wager_id}/options/create`;
             delete optionData.wager_id;
             return client.post(url, optionData, config)
+            .then((wager: AxiosResponse) => {
+                resolve(wager);
+            })
+            .catch((err) => {
+                console.error(err);
+                reject(err.response.data);
+            });
+        });
+    }
+
+    static     enterUserBet(betData: any) {
+        return new Promise((resolve, reject) => {
+            const {client, config} = this.createClient();
+            const url = `/api/wagers/${betData.wager_id}/bet`;
+            delete betData.wager_id;
+            return client.post(url, betData, config)
             .then((wager: AxiosResponse) => {
                 resolve(wager);
             })

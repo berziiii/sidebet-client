@@ -94,6 +94,7 @@ class App extends React.Component<AppProps, AppState> {
                     <Switch>
                         {/* User Routes */}
                         <Route exact path={"/"} component={ComponentFactory.Wagers}/>
+                        <Route exact path={"/wagers/:wagerId"} component={ComponentFactory.Wager} match={this.props}/>
                         <Route exact path={"/signin"} component={ComponentFactory.SignIn}/>
                         <Route exact path={"/signup"} component={ComponentFactory.SignUp}/>
                         <Route exact path={"/profile"} component={ComponentFactory.Profile}/>

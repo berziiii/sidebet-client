@@ -30,40 +30,17 @@ export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
 
         this.getWagerDetails = this.getWagerDetails.bind(this);
         this.handleBet = this.handleBet.bind(this);
+        this.setWagerState = this.setWagerState.bind(this);
+        this.removeBet = this.removeBet.bind(this);
     }
 
     componentDidMount() {
-        const {appStore} = this;
         const { match } = this.props.match;
         const wagerId = match.params.wagerId;
 
         this.getWagerDetails(wagerId)
         .then((wager: any) => {
-            let userBet = undefined;
-            wager.bets.forEach((bet: any) => {
-                if (appStore.dataStore.authorizedUser.user_id === bet.user_id)
-                    userBet = bet.option_id;
-            });
-            this.setState({
-                loading: false,
-                wager_id: wager.wager_id,
-                wager_title: wager.wager_title,
-                bets: wager.bets,
-                wager_description: wager.wager_description,
-                share_type: wager.share_type,
-                wager_prize: wager.wager_prize,
-                wager_prize_type: wager.wager_prize_type,
-                wager_type: wager.wager_type,
-                wager_buy_in: wager.wager_buy_in,
-                closes_at: wager.closes_at,
-                expires_at: wager.expires_at,
-                options: wager.options,
-                owner: wager.owner.username,
-                owner_id: wager.owner.owner_id,
-                created_at: wager.created_at,
-                last_modified: wager.last_modified,
-                userBet: userBet
-            });
+            this.setWagerState(wager);
         })
         .catch((err: any) => {
             console.error(err);
@@ -71,9 +48,57 @@ export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
         });
     }
 
-    getWagerDetails(wagerId: string) {
+    setWagerState(wager: any) {
+        const {appStore} = this;
+        let userBet = undefined;
+        wager.bets.forEach((bet: any) => {
+            if (appStore.dataStore.authorizedUser.user_id === bet.user_id)
+                userBet = bet.option_id;
+        });
+        this.setState({
+            loading: false,
+            wager_id: wager.wager_id,
+            wager_title: wager.wager_title,
+            bets: wager.bets,
+            wager_description: wager.wager_description,
+            share_type: wager.share_type,
+            wager_prize: wager.wager_prize,
+            wager_prize_type: wager.wager_prize_type,
+            wager_type: wager.wager_type,
+            wager_buy_in: wager.wager_buy_in,
+            closes_at: wager.closes_at,
+            expires_at: wager.expires_at,
+            options: wager.options,
+            owner: wager.owner.username,
+            owner_id: wager.owner.owner_id,
+            created_at: wager.created_at,
+            last_modified: wager.last_modified,
+            userBet: userBet
+        });
+    }
+
+    getWagerDetails(wagerId: any) {
         const {appStore} = this;
         return appStore.dataStore.getWagerById(wagerId);
+    }
+
+    removeBet() {
+        const { appStore, state } = this;
+        const betData = {
+            wager_id: state.wager_id,
+        };
+        appStore.dataStore.deleteUserBet(betData)
+        .then(() => {
+            return this.getWagerDetails(betData.wager_id);
+        })
+        .then((wager: any) => {
+            this.setWagerState(wager);
+            appStore.showMessage("success", "Successfully removed Bet");
+        })
+        .catch((err: any) => {
+            console.error(err);
+            appStore.showMessage("error", "Something went wrong. Unable to remove Bet");
+        });
     }
 
     handleBet(option: any) {
@@ -90,36 +115,15 @@ export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
                 return this.getWagerDetails(betDetails.wager_id);
             })
             .then((wager: any) => {
-                let userBet = undefined;
-                wager.bets.forEach((bet: any) => {
-                    if (appStore.dataStore.authorizedUser.user_id === bet.user_id)
-                        userBet = bet.option_id;
-                });
-                this.setState({
-                    wager_id: wager.wager_id,
-                    wager_title: wager.wager_title,
-                    bets: wager.bets,
-                    wager_description: wager.wager_description,
-                    share_type: wager.share_type,
-                    wager_prize: wager.wager_prize,
-                    wager_prize_type: wager.wager_prize_type,
-                    wager_type: wager.wager_type,
-                    wager_buy_in: wager.wager_buy_in,
-                    closes_at: wager.closes_at,
-                    expires_at: wager.expires_at,
-                    options: wager.options,
-                    owner: wager.owner.username,
-                    owner_id: wager.owner.owner_id,
-                    created_at: wager.created_at,
-                    last_modified: wager.last_modified,
-                    userBet: userBet
-                });
+                this.setWagerState(wager);
                 appStore.showMessage("success", "Bet Successfully Made.");
             })
             .catch((err: any) => {
                 console.error(err);
                 appStore.showMessage("error", "Something went wrong. Unable to enter Bet");
             });
+        if (optionData.option_id === state.userBet)
+            this.removeBet();
     }
 
     render() {

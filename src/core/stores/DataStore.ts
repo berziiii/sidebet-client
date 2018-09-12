@@ -269,6 +269,19 @@ export class DataStore implements Models.Store {
         });
     }
 
+    @action
+    deleteUserBet(betData: any) {
+        return new Promise((resolve, reject) => {
+            APIClient.deleteUserBet(betData)
+            .then(() => {
+                resolve();
+            })
+            .catch((err: any) => {
+                reject(err);
+            });
+        });
+    }
+    
     // ********************* //
     // ******* ADMIN ******* //
     // ********************* //

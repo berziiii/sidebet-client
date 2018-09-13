@@ -165,6 +165,11 @@
   text-align: center;
 }
 
+.sb_wager__header-text {
+  color: $white;
+  margin: 0 50px;
+}
+
 .sb_wager__bet-user-avatar {
   padding: 5px 11px;
   border: 1px solid $light-blue;
@@ -301,6 +306,7 @@
     padding: 50px 25px;
   }
   .sb_wager__header-text {
+    color: $dark-blue;
     margin: 0px 50px 15px;
   }
 }

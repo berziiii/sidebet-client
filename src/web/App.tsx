@@ -40,16 +40,18 @@ class App extends React.Component<AppProps, AppState> {
     componentWillMount() {
         this.appStore.dataStore.initialize()
         .then((user: any) => {
-            this.setState({isLoading: false});
-            if (_.isNil(this.appStore.dataStore.authorizedUser))
+            if (_.isNil(this.appStore.dataStore.authorizedUser)) {
                 this.appStore.dataStore.clearUserAndToken();
-            else {
+                this.appStore.navigateTo("/signin");
+            } else {
                 if (!this.appStore.dataStore.authorizedUser.is_active) {
                     this.appStore.dataStore.clearUserAndToken();
                     this.appStore.navigateTo("/signin");
                     this.appStore.showMessage("error", "Account Locked or Inactive. Please contact an Administrator.");
+                } else {
                 }
             }
+            this.setState({isLoading: false});
         })
         .catch((err) => {
             console.error(err);
@@ -92,18 +94,25 @@ class App extends React.Component<AppProps, AppState> {
             <>
                 <Content>
                     <Switch>
-                        {/* User Routes */}
-                        <Route exact path={"/"} component={ComponentFactory.Wagers}/>
-                        <Route exact path={"/wagers/:wagerId"} component={ComponentFactory.Wager} match={this.props}/>
-                        <Route exact path={"/signin"} component={ComponentFactory.SignIn}/>
-                        <Route exact path={"/signup"} component={ComponentFactory.SignUp}/>
-                        <Route exact path={"/profile"} component={ComponentFactory.Profile}/>
-
-                        {/* Admin Routes */}
-                        <Route exact path={"/admin/users"} component={ComponentFactory.AdminUsers}/>
-                        <Route exact path={"/admin/users/:userId"} component={ComponentFactory.AdminUser} match={this.props}/>
-                        <Route exact path={"/admin/wagers"} component={ComponentFactory.AdminWagers}/>
-
+                        {_.isNil(this.appStore.dataStore.authorizedUser) && 
+                            <>
+                                <Route exact path={"/signin"} component={ComponentFactory.SignIn}/>
+                                <Route exact path={"/signup"} component={ComponentFactory.SignUp}/>
+                            </>
+                        }
+                        {/* Authorized Routes Routes */}
+                        {!_.isNil(this.appStore.dataStore.authorizedUser) && 
+                            <>
+                                <Route exact path={"/signin"} component={ComponentFactory.SignIn}/>
+                                <Route exact path={"/signup"} component={ComponentFactory.SignUp}/>
+                                <Route exact path={"/"} component={ComponentFactory.Wagers}/>
+                                <Route exact path={"/admin/users"} component={ComponentFactory.AdminUsers}/>
+                                <Route exact path={"/admin/users/:userId"} component={ComponentFactory.AdminUser} match={this.props}/>
+                                <Route exact path={"/admin/wagers"} component={ComponentFactory.AdminWagers}/>
+                                <Route exact path={"/wagers/:wagerId"} component={ComponentFactory.Wager} match={this.props}/>
+                                <Route exact path={"/profile"} component={ComponentFactory.Profile}/>
+                            </>
+                        }
                         <Route component={ComponentFactory.NotFound}/>
                     </Switch>
                 </Content>

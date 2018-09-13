@@ -12,6 +12,12 @@ export class AdminWagers extends BaseComponent<AdminWagersProps, AdminWagersStat
     constructor(props: AdminWagersProps) {
         super(props);
     }
+
+    componentWillMount() {
+        if (_.isNil(this.appStore.dataStore.authorizedUser))
+            this.appStore.navigateTo("/signin");
+    }
+    
     render() {
         return(
             <Observer> 

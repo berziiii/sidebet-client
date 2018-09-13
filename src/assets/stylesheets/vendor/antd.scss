@@ -34,4 +34,12 @@
   background: $grey !important;
   border: .5px solid $dark-blue;
   color: $dark-blue;
+  padding: 0 1px;
+}
+
+@media (max-width: 768px) {
+  .ant-table-body {
+    min-height: 75vh!important;
+    max-height: 75vh!important;
+  }
 }

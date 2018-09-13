@@ -387,11 +387,17 @@ export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
         );
 
         const optionBets = (option: any) => state.bets.map((bet: any, i: any) => {
+            let initial = "U";
+            let name = "User";
+            if (!_.isNil(bet.username)) {
+                initial = bet.username.charAt(0).toUpperCase();
+                name = bet.username !== "" ? bet.username : "User";
+            }
             return (
                 <>
                     {bet.option_id === option.option_id && 
                     <div key={`optionBet${i}`} className="sb_wager__bets-wrapper">
-                        <div key={`betUser${i}`} className="sb_wager__bet-user-avatar">{bet.username.charAt(0).toUpperCase()}</div> {bet.username}
+                        <div key={`betUser${i}`} className="sb_wager__bet-user-avatar">{initial}</div> {name}
                     </div>}
                 </>
             );

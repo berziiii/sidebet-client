@@ -166,7 +166,7 @@
 }
 
 .sb_wager__bet-user-avatar {
-  padding: 6px 12px;
+  padding: 5px 11px;
   border: 1px solid $light-blue;
   border-radius: 50px;
   font-weight: 900;
@@ -212,16 +212,15 @@
   border-radius: 75px;
   background: $light-blue;
   color: $white;
-  border: 1px solid $light-blue;
-  border: none;
+  border: .5px solid $grey;
   .sb_wager__edit-wager-icon {
     font-size: 2em;
   }
   &:hover, &:visited, &:focus {
     background: $light-blue;
     color: $white;
-    border: 1px solid $light-blue;
-    border: none;
+    border: .5px solid $grey;
+    // border: none;
   }
   &:hover {
     transform: scale(1.1);

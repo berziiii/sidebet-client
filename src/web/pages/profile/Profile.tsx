@@ -12,6 +12,11 @@ export class Profile extends BaseComponent {
     constructor(props: any) {
         super(props);
     }
+    
+    componentWillMount() {
+        if (_.isNil(this.appStore.dataStore.authorizedUser))
+            this.appStore.navigateTo("/signin");
+    }
 
     componentDidMount() {
     }

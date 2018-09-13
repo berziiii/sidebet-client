@@ -19,6 +19,11 @@ export class AdminUsers extends BaseComponent<AdminUsersProps, AdminUsersState> 
         this.getAllUsers = this.getAllUsers.bind(this);
     }
 
+    componentWillMount() {
+        if (_.isNil(this.appStore.dataStore.authorizedUser))
+            this.appStore.navigateTo("/signin");
+    }
+
     componentDidMount() {
         if (this.state.users.length === 0)
             this.getAllUsers();

@@ -111,17 +111,20 @@ export class SignUpForm extends BaseComponent<SignUpProps, SignUpState> {
         };
         const validUsername = this.validateUsername(user.username);
         if (validUsername) {
-            appStore.dataStore.updateNewUser(user)
-            .then((userObj: any) => {
-                if (!_.isNil(userObj)) {
-                    this.appStore.navigateTo("/");
-                    this.appStore.showMessage("success", "Profile Successfully Created.");
-                }
-            })
-            .catch((err: any) => {
-                console.error(err);
-                this.appStore.showMessage("error", err);
-            });
+            if (this.appStore.validateProfileData(user))
+                appStore.dataStore.updateNewUser(user)
+                .then((userObj: any) => {
+                    if (!_.isNil(userObj)) {
+                        this.appStore.navigateTo("/");
+                        this.appStore.showMessage("success", "Profile Successfully Created.");
+                    }
+                })
+                .catch((err: any) => {
+                    console.error(err);
+                    this.appStore.showMessage("error", err);
+                });
+            else 
+                this.appStore.showMessage("error", "Please Complete all Profile Fields");
         } else {
             this.appStore.showMessage("error", "Username cannot contain spaces.");
         }

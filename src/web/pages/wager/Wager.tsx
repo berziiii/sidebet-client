@@ -12,7 +12,10 @@ export class Wager extends BaseComponent {
     constructor(props: any) {
         super(props);
     }
-    componentDidMount() {
+
+    componentWillMount() {
+        if (_.isNil(this.appStore.dataStore.authorizedUser))
+            this.appStore.navigateTo("/signin");
     }
 
     render() { 

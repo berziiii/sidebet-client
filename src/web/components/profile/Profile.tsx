@@ -71,14 +71,17 @@ export class ProfileForm extends BaseComponent<ProfileProps, ProfileState> {
             user_id: this.appStore.dataStore.authorizedUser.user_id
         };
         if (this.state.validUsername)
-            appStore.dataStore.updateUserProfile(userProfile)
-            .then(() => {
-                this.appStore.showMessage("success", "Successfully Updated Profile.");
-            })
-            .catch((err: any) => {
-                console.error(err);
-                this.appStore.showMessage("error", err);
-            });
+            if (this.appStore.validateProfileData(userProfile))
+                appStore.dataStore.updateUserProfile(userProfile)
+                .then(() => {
+                    this.appStore.showMessage("success", "Successfully Updated Profile.");
+                })
+                .catch((err: any) => {
+                    console.error(err);
+                    this.appStore.showMessage("error", err);
+                });
+            else 
+                this.appStore.showMessage("error", "Please complete all fields.");
     }
 
     validatePassword(password: string | undefined) {

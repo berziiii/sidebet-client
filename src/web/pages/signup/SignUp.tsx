@@ -12,6 +12,7 @@ export class SignUp extends BaseComponent {
     constructor(props: any) {
         super(props);
     }
+
     componentDidMount() {
     }
 

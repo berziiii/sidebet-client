@@ -81,11 +81,6 @@
   max-height: 100%;
   overflow-y: scroll;
   background: $white;
-  .ant-table-body {
-    // max-height: 100;
-    // overflow-y: scroll;
-    // border-bottom: .5px solid $dark-blue;
-  }
 }
 
 .sb_admin-user__personal-info-header,
@@ -103,7 +98,7 @@
 
 .sb_admin-user__content {
   padding-left: 15px;
-  text-transform: uppercase;
+  font-weight: bold;
 }
 
 .sb_admin-user__password-reset {
@@ -132,11 +127,28 @@
   .sb_admin-user__personal-info-container,
   .sb_admin-user__activity-container {
     width: 100%;
+    padding: 0px;
     border: none;
+    padding-bottom: 10px;
+    h5 {
+      padding: 0 10px;
+    }
   }
   .sb_admin-user__activity-container {
     margin-top: 30px;
-    border-top: 5px solid $dark-blue;
+    // border-top: 5px solid $dark-blue;
     padding-top: 30px;
+  }
+  .sb_admin-user__personal-info-header,
+  .sb_admin-user__status-header,
+  .sb_admin-user__password-header {
+    background: $white;
+    color: $dark-blue;
+    font-weight: bold;
+    border-top: solid .5px $dark-blue;
+    border-bottom: solid .5px $dark-blue;
+  }
+  .sb_admin-user__password-reset{
+    padding: 0px 15px;
   }
 }

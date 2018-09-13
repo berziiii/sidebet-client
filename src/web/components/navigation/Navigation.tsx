@@ -104,6 +104,11 @@ export class Navigation extends BaseComponent<NavigationProps, NavigationState> 
                     onClose={this.onClose}
                     visible={this.state.drawerVisible}>
                     <Menu className="sb_navigation__drawer-menu-container">
+                        <Menu.Item
+                            key="logo"
+                            className="sb_navigation__brand">
+                            <span>SB</span>
+                        </Menu.Item>
                         {!_.isNil(this.appStore.dataStore.authorizedUser) && 
                             avatar()}
                         {!_.isNil(this.appStore.dataStore.authorizedUser) &&
@@ -178,7 +183,11 @@ export class Navigation extends BaseComponent<NavigationProps, NavigationState> 
                     className="sb_navigation__menu-container"
                     mode="inline"
                     theme="dark">
-                    
+                    <Menu.Item
+                        key="logo"
+                        className="sb_navigation__brand">
+                        <span>SB</span>
+                    </Menu.Item>
                     {!_.isNil(this.appStore.dataStore.authorizedUser) && 
                         avatar()}
                     {!_.isNil(this.appStore.dataStore.authorizedUser) &&

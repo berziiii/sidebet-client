@@ -57,17 +57,16 @@ export class AppStore {
         return mode;
     }
 
+    @action
     public navigateTo(path: string, replace: boolean = false) {
         console.assert(!_.isNil(path) && path.length > 0);
-
         const prefix = ``;
 
         const url = `${!path.startsWith(prefix) ? prefix : ""}${path.startsWith("/") ? "" : "/"}${path}`;
-
         if (replace)
             AppStore.history.replace(url);
         else
-            AppStore.history.push(url);        
+            AppStore.history.push(url); 
     }
 
     public checkAuthenticatedRoute() {
@@ -77,10 +76,43 @@ export class AppStore {
                 this.navigateTo("/signin");
             }
         } else if (!_.isNil(this.dataStore.authorizedUser)) {
+            if (!this.completedProfile())
+                this.navigateTo("/profile");
             if (path.indexOf("admin") !== -1 && !this.dataStore.authorizedUser!.is_admin) {
                 this.navigateTo("/");
             }
         }
+    }
+
+    public validateProfileData(profile: any) {
+        let validDataset = true;
+        const keys = Object.keys(profile);
+        _.each(keys, (key: any) => {
+            if (profile[key] === "" || profile[key] === undefined) {
+                validDataset = false;
+            }
+        });
+        return validDataset;
+    }
+
+    public completedProfile() {
+        let validDataset = true;
+        if (!_.isNil(this.dataStore.authorizedUser.username)) {
+            const profile = {
+                username: this.dataStore.authorizedUser.username,
+                first_name: this.dataStore.authorizedUser.first_name,
+                last_name: this.dataStore.authorizedUser.last_name,
+                phone: this.dataStore.authorizedUser.phone
+            };
+    
+            const keys = Object.keys(profile);
+            _.each(keys, (key: any) => {
+                if (profile[key] === "" || profile[key] === undefined) {
+                    validDataset = false;
+                }
+            });
+        }
+        return validDataset;
     }
 
     public validateEmail(email: any) {

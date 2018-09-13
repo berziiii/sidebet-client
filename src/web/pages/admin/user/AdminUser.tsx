@@ -14,7 +14,16 @@ export class AdminUserPage extends BaseComponent<AdminUserProps, AdminUserState>
         super(props);
     }
 
+    componentWillMount() {
+        if (_.isNil(this.appStore.dataStore.authorizedUser))
+            this.appStore.navigateTo("/signin");
+    }
+
     componentDidMount() {
+        if (_.isNil(this.appStore.dataStore.authorizedUser)) {
+            this.appStore.dataStore.clearUserAndToken();
+            this.appStore.navigateTo("/signin");
+        }
     }
 
     render() {

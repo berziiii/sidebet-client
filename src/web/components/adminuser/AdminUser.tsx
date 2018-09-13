@@ -244,7 +244,7 @@ export class AdminUser extends BaseComponent<AdminUserProps, AdminUserState> {
                     <h5>Admin: <span className="sb_admin-user__content">{this.state.is_admin ? <Switch checked={true} onChange={this.toggleUserAdmin} /> : <Switch checked={false} onChange={this.toggleUserAdmin}/>}</span> </h5> 
                     <h5>Active: <span className="sb_admin-user__content">{this.state.is_active ? <Switch checked={true} onChange={this.toggleUserActive} /> : <Switch checked={false} onChange={this.toggleUserActive}/>}</span></h5>
                     <h3 className="sb_admin-user__password-header" >Password Reset</h3>
-                    <Form> 
+                    <Form className="sb_admin-user__password-container"> 
                         <FormItem 
                         className="sb_admin-user__password-reset"
                         label="Reset Password"

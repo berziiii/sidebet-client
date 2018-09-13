@@ -135,7 +135,9 @@ export class Navigation extends BaseComponent<NavigationProps, NavigationState> 
                         </Menu.Item>}
                         {!_.isNil(this.appStore.dataStore.authorizedUser) && 
                         this.appStore.dataStore.authorizedUser.is_admin &&
-                        <h4 className="sb_navigation__admin-break">admin</h4>}
+                        <>
+                            <h4 className="sb_navigation__admin-break">admin</h4>
+                        </>}
                         {!_.isNil(this.appStore.dataStore.authorizedUser) && 
                         this.appStore.dataStore.authorizedUser.is_admin &&
                         <Menu.Item 
@@ -208,7 +210,9 @@ export class Navigation extends BaseComponent<NavigationProps, NavigationState> 
                     </Menu.Item>}
                     {!_.isNil(this.appStore.dataStore.authorizedUser) && 
                     this.appStore.dataStore.authorizedUser.is_admin &&
-                    <h4 className="sb_navigation__admin-break">admin</h4>}
+                    <>
+                        <h4 className="sb_navigation__admin-break">admin</h4>
+                    </>}
                     {!_.isNil(this.appStore.dataStore.authorizedUser) && 
                     this.appStore.dataStore.authorizedUser.is_admin &&
                     <Menu.Item 

@@ -179,4 +179,15 @@
       margin-bottom: 10px;
     }
   }
+  .sb_wagers__add-wager-button {
+    right: 10px;
+    width: 70px;
+    height: 70px;
+    z-index: 1000;
+    border-radius: 60px;
+    bottom: 40px;
+    .sb_wager__add-wager-icon {
+      font-size: 2em;
+    }
+  }
 }

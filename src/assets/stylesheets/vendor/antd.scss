@@ -18,3 +18,20 @@
   background: $dark-blue;
   color: $white;
 }
+
+.ant-collapse-header {
+  text-align: left;
+}
+
+.ant-collapse-content > .ant-collapse-content-box {
+  padding: 0px
+}
+.ant-collapse > .ant-collapse-item {
+  border: none;
+  margin: 1px 0px;
+}
+.ant-collapse {
+  background: $grey !important;
+  border: .5px solid $dark-blue;
+  color: $dark-blue;
+}

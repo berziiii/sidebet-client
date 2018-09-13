@@ -1,8 +1,9 @@
 import * as React from "react";
 import * as _ from "lodash";
 import {Observer} from "mobx-react";
-import { Icon, Button, Drawer, Form, Input, DatePicker, Select, Modal } from "antd";
+import { Icon, Button, Drawer, Form, Input, DatePicker, Select, Modal, Collapse } from "antd";
 import {BaseComponent} from "../BaseComponent";
+import {AppMode} from "../../stores/AppStore";
 import {WagerItemProps, WagerItemState} from "./WagerItemInterface";
 import * as moment from "moment";
 import * as ComponentFactory from "../ComponentFactory";
@@ -10,6 +11,8 @@ import TextArea from "antd/lib/input/TextArea";
 
 const FormItem = Form.Item;
 const Option = Select.Option;
+const Panel = Collapse.Panel;
+
 let oldState: any = {};
 let keys: any = [];
 
@@ -421,7 +424,8 @@ export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
             const userBetOption = state.userBet === option.option_id;
             return (
                 <>
-                    <div key={`optionWrapper${i}`} className="sb_wager__option-wrapper" style={{width: `${optionWidth}%`}}>
+                    {appStore.state.mode === AppMode.Desktop && 
+                        <div key={`optionWrapper${i}`} className="sb_wager__option-wrapper" style={{width: `${optionWidth}%`}}>
                         {userBetOption && !wagerClosed &&
                         <Button 
                             // key={`optionButton${i}`}
@@ -459,7 +463,49 @@ export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
                         {hasBets && optionBets(option)}
                         {!hasBets &&
                             <h4 key={`noBets${i}`} className="sb_wager__no-bets"> No Bets</h4>}
-                    </div>
+                    </div>}
+                    
+                    {appStore.state.mode === AppMode.Mobile && 
+                    <div key={`optionWrapper${i}`} className="sb_wager__option-wrapper" style={{width: "100%"}}>
+                        {userBetOption && !wagerClosed &&
+                        <Button 
+                            className="sb_wager__option-button sb_wager__user-selected-option"
+                            onClick={() => this.handleBet(option)}>
+                            {option.option_text}
+                        </Button>}
+
+                        {userBetOption && wagerClosed &&
+                        <Button 
+                            disabled
+                            className="sb_wager__option-button sb_wager__user-selected-option"
+                            onClick={() => this.handleBet(option)}>
+                            {option.option_text}
+                        </Button>}
+
+                        {!userBetOption && !wagerClosed &&
+                        <Button 
+                            className="sb_wager__option-button"
+                            onClick={() => this.handleBet(option)}>
+                            {option.option_text}
+                        </Button>}
+
+                        {!userBetOption && wagerClosed &&
+                        <Button 
+                            disabled
+                            className="sb_wager__option-button"
+                            onClick={() => this.handleBet(option)}>
+                            {option.option_text}
+                        </Button>}
+
+                        {hasBets && 
+                        <Collapse accordion>
+                            <Panel header="Bets" key="1">
+                                {optionBets(option)}
+                            </Panel>
+                        </Collapse>}
+                        {!hasBets &&
+                            <h4 key={`noBets${i}`} className="sb_wager__no-bets"> No Bets</h4>}
+                    </div>}
                 </>
             );
         });
@@ -609,30 +655,12 @@ export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
             </Drawer>
         );
 
-        const content = (
-            <div className="sb_wager__main-container">
-                <div className="sb_wager__card-container">
-                    <h2 className="sb_wager__wager-title">
-                    <Button 
-                        onClick={this.handleBackToWagers}
-                        className="sb_wager__back">
-                        <Icon 
-                            className="sb_wager__back-icon"
-                            type="rollback" />
-                    </Button>
-                    {state.wager_title}
-                    {userIsOwner && !wagerClosed && 
-                    <Button 
-                        onClick={this.handleEditWager}
-                        className="sb_wager__edit-wager-button">
-                        <Icon 
-                            className="sb_wager__edit-wager-icon"
-                            type="edit" />
-                    </Button>}
-                    </h2>
-                    <div className="sb_wager__wager-content-container">
-                        <div className="sb_wager__wager-meta-data-container">
-                            <div className="sb_wager__wager-meta-data-item">
+        const mobileSideContent = (
+            <>
+                <Collapse accordion>
+                    <Panel header="Wager Details" key="1">
+                        <div className="sb_wager__wager-meta-data-container meta-data-mobile">
+                            <div className="sb_wager__wager-meta-data-item meta-data-item-mobile">
                                 <h5><span>Owner</span> <div className="sb_wager__wager-meta-data-content">{ownerAvatar}{state.owner}</div></h5>
                             </div>
                             <div className="sb_wager__wager-meta-data-item">
@@ -686,9 +714,100 @@ export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
                                 <h5><span>Last Modified</span> <div className="sb_wager__wager-meta-data-content">{moment(state.last_modified).format("llll")}</div></h5>
                             </div>
                         </div>
+                    </Panel>
+                </Collapse>
+            </>
+        );
+
+        const sideContent = (
+            <div className="sb_wager__wager-meta-data-container">
+                <div className="sb_wager__wager-meta-data-item">
+                    <h5><span>Owner</span> <div className="sb_wager__wager-meta-data-content">{ownerAvatar}{state.owner}</div></h5>
+                </div>
+                <div className="sb_wager__wager-meta-data-item">
+                    <h5><span>Status</span> <div className="sb_wager__wager-meta-data-content">{wagerStatus}</div></h5>
+                </div>
+                <div className="sb_wager__wager-meta-data-item">
+                    <h5><span>Betting Closes</span> <div className="sb_wager__wager-meta-data-content">{moment(state.closes_at).format("llll")}</div></h5>
+                </div>
+                <div className="sb_wager__wager-meta-data-item">
+                    <h5><span>Wager Closes</span> <div className="sb_wager__wager-meta-data-content">{moment(state.expires_at).format("llll")}</div></h5>
+                </div>
+                <div className="sb_wager__wager-meta-data-item">
+                    <h5>
+                        <span>Wager Type</span>
+                        <div className="sb_wager__wager-meta-data-content">
+                            <Icon type="star" /> {state.wager_type}
+                        </div>
+                    </h5>
+                </div>
+                <div className="sb_wager__wager-meta-data-item">
+                        <h5>
+                            <span>Prize Type</span>
+                            <div className="sb_wager__wager-meta-data-content">
+                                <Icon type="gift" /> {state.wager_prize_type}
+                            </div>
+                        </h5>
+                    </div>
+                {MonetaryPrize && 
+                <>
+                    <div className="sb_wager__wager-meta-data-item">
+                        <h5>
+                            <span>Buy In Amount</span>
+                            <div className="sb_wager__wager-meta-data-content">
+                                ${state.wager_buy_in}
+                            </div>
+                        </h5>   
+                    </div>
+                </>}
+                {!MonetaryPrize && 
+                <>
+                    <div className="sb_wager__wager-meta-data-item">
+                        <h5>
+                            <span>Prize</span>
+                            <div className="sb_wager__wager-meta-data-content">
+                                <Icon type="trophy" /> {state.wager_prize}
+                            </div>
+                        </h5>
+                    </div>
+                </>}
+                <div className="sb_wager__wager-meta-data-item">
+                    <h5><span>Last Modified</span> <div className="sb_wager__wager-meta-data-content">{moment(state.last_modified).format("llll")}</div></h5>
+                </div>
+            </div>
+        );
+        
+        const content = (
+            <div className="sb_wager__main-container">
+                <div className="sb_wager__card-container">
+                    <h2 className="sb_wager__wager-title">
+                    <Button 
+                        onClick={this.handleBackToWagers}
+                        className="sb_wager__back">
+                        <Icon 
+                            className="sb_wager__back-icon"
+                            type="rollback" />
+                    </Button>
+                    {state.wager_title}
+                    {userIsOwner && !wagerClosed && 
+                    <Button 
+                        onClick={this.handleEditWager}
+                        className="sb_wager__edit-wager-button">
+                        <Icon 
+                            className="sb_wager__edit-wager-icon"
+                            type="edit" />
+                    </Button>}
+                    </h2>
+                    <div className="sb_wager__wager-content-container">
+
+                        {appStore.state.mode === AppMode.Desktop &&
+                        sideContent}
+
+                        {appStore.state.mode === AppMode.Mobile &&
+                        mobileSideContent}
                         <div className="sb_wager__wager-details">
                             <p className="sb_wager__wager-description">{state.wager_description}</p> 
-                            <h2> Place a Bet! </h2>  
+                            <h2 className="sb_wager__options-header"> Place a Bet! </h2>  
                             <div className="sb_wager__wager-options-container">
                                 {wagerOptions}
                             </div> 

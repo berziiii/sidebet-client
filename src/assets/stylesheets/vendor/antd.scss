@@ -23,6 +23,13 @@
   text-align: left;
 }
 
+.ant-collapse.sb_wager__details-collaspe {
+  position: fixed;
+  margin-top: 66px;
+  width: 100%;
+  z-index: 10;
+}
+
 .ant-collapse-content > .ant-collapse-content-box {
   padding: 0px
 }

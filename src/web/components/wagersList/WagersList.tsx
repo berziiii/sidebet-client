@@ -341,8 +341,11 @@ export class WagersList extends BaseComponent<WagersListProps, WagersListState> 
                     <FormItem>
                         <h5 className="sb_wagers__add-wager-input-label">Bets Close at:</h5>
                         <DatePicker 
-                            showTime
-                            format="YYYY-MM-DD HH:mm:ss"
+                            showTime={{
+                                use12Hours: true,
+                                format: "HH:mm A"
+                            }}
+                            format="llll"
                             className="sb_wagers__add-wager-input"
                             onChange={(d, ds) => this.handleBettingClosesChange(d, ds)}
                             placeholder="Betting Closes at..." />
@@ -351,8 +354,11 @@ export class WagersList extends BaseComponent<WagersListProps, WagersListState> 
                     <FormItem>
                         <h5 className="sb_wagers__add-wager-input-label">Wager Expires at:</h5>
                         <DatePicker 
-                            showTime
-                            format="YYYY-MM-DD HH:mm:ss"
+                            showTime={{
+                                use12Hours: true,
+                                format: "HH:mm a"
+                            }}
+                            format="llll"
                             className="sb_wagers__add-wager-input"
                             onChange={(d, ds) => this.handleBetExpiresAt(d, ds)}
                             placeholder="Wager Expires at..." />

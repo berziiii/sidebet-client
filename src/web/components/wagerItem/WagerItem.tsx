@@ -505,7 +505,7 @@ export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
 
                         {hasBets && 
                         <Collapse accordion>
-                            <Panel header="Bets" key="1">
+                            <Panel header="Players" key={`${i}`}>
                                 {optionBets(option)}
                             </Panel>
                         </Collapse>}
@@ -619,9 +619,12 @@ export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
                     <FormItem>
                         <h5 className="sb_wagers__add-wager-input-label">Bets Close at:</h5>
                         <DatePicker 
-                            showTime
-                            format="YYYY-MM-DD HH:mm:ss"
-                            defaultValue={moment(state.closes_at, "YYYY-MM-DD HH:mm:ss")}
+                            showTime={{
+                                use12Hours: true,
+                                format: "HH:mm A"
+                            }}
+                            format="llll"
+                            defaultValue={moment(state.closes_at)}
                             className="sb_wagers__add-wager-input"
                             onChange={(d, ds) => this.handleBettingClosesChange(d, ds)}
                             placeholder="Betting Closes at..." />
@@ -630,9 +633,12 @@ export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
                     <FormItem>
                         <h5 className="sb_wagers__add-wager-input-label">Wager Expires at:</h5>
                         <DatePicker 
-                            showTime
-                            format="YYYY-MM-DD HH:mm:ss"
-                            defaultValue={moment(state.expires_at, "YYYY-MM-DD HH:mm:ss")}
+                            showTime={{
+                                use12Hours: true,
+                                format: "HH:mm A"
+                            }}
+                            format="llll"
+                            defaultValue={moment(state.closes_at)}
                             className="sb_wagers__add-wager-input"
                             onChange={(d, ds) => this.handleBetExpiresAt(d, ds)}
                             placeholder="Wager Expires at..." />
@@ -646,7 +652,7 @@ export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
                             onClick={this.handleEditWager}
                             type="primary" 
                             htmlType="submit" >
-                            Edit Wager
+                            Update Wager
                         </Button>
                     </FormItem>
 
@@ -663,7 +669,9 @@ export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
 
         const mobileSideContent = (
             <>
-                <Collapse accordion>
+                <Collapse 
+                    accordion
+                    className="sb_wager__details-collaspe">
                     <Panel header="Wager Details" key="1">
                         <div className="sb_wager__wager-meta-data-container meta-data-mobile">
                             <div className="sb_wager__wager-meta-data-item meta-data-item-mobile">

@@ -218,7 +218,7 @@ export class DataStore implements Models.Store {
     }
 
     @action
-    getWagerById(wagerId: string) {
+    getWagerById(wagerId: any) {
         return new Promise((resolve, reject) => {
             APIClient.getWagerById(wagerId)
             .then((wagers: any) => {
@@ -281,7 +281,46 @@ export class DataStore implements Models.Store {
             });
         });
     }
-    
+
+    @action
+    updateWager(wagerData: any) {
+        return new Promise((resolve, reject) => {
+            APIClient.updateWager(wagerData)
+            .then((updatedWager: any) => {
+                resolve(this.processResponse(updatedWager));
+            })
+            .catch((err: any) => {
+                reject(err);
+            });
+        });
+    }
+
+    @action
+    updateWagerOption(optionData: any) {
+        return new Promise((resolve, reject) => {
+            APIClient.updateWagerOption(optionData)
+            .then((updatedWager: any) => {
+                resolve(this.processResponse(updatedWager));
+            })
+            .catch((err: any) => {
+                reject(err);
+            });
+        });
+    }
+
+    @action
+    removeWager(wagerId: any) {
+        return new Promise((resolve, reject) => {
+            APIClient.removeWager(wagerId)
+            .then(() => {
+                resolve();
+            })
+            .catch((err: any) => {
+                reject(err);
+            });
+        });
+    }
+
     // ********************* //
     // ******* ADMIN ******* //
     // ********************* //

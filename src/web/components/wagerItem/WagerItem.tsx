@@ -10,7 +10,6 @@ import TextArea from "antd/lib/input/TextArea";
 
 const FormItem = Form.Item;
 const Option = Select.Option;
-let uuid = 1;
 let keys: any = [];
 
 export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
@@ -45,15 +44,13 @@ export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
         this.handleBettingClosesChange = this.handleBettingClosesChange.bind(this);
         this.handleTextInputChange = this.handleTextInputChange.bind(this);
         this.submitEditWager = this.submitEditWager.bind(this);
-        this.addOption = this.addOption.bind(this);
-        this.removeOption = this.removeOption.bind(this);
         this.handleOptionChange = this.handleOptionChange.bind(this);
-        // this.editWager = this.editWager.bind(this);
-        // this.editWagerOption = this.editWagerOption.bind(this);
+        this.removeWager = this.removeWager.bind(this);
+        this.handleBackToWagers = this.handleBackToWagers.bind(this);
+        this.editWager = this.editWager.bind(this);
     }
 
     componentDidMount() {
-        uuid = 1;
         keys = [];
         const { match } = this.props.match;
         const wagerId = match.params.wagerId;
@@ -75,8 +72,10 @@ export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
             if (appStore.dataStore.authorizedUser.user_id === bet.user_id)
                 userBet = bet.option_id;
         });
+        keys = wager.options;
         this.setState({
             loading: false,
+            visibleDrawer: false,
             wager_id: wager.wager_id,
             wager_title: wager.wager_title,
             bets: wager.bets,
@@ -189,50 +188,29 @@ export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
     }
 
     submitEditWager(e: any) {
-        // e.preventDefault();
-        // const newWagerData = {
-        //     wager_title: this.state.wager_title,
-        //     wager_description: this.state.wager_description,
-        //     share_type: this.state.share_type,
-        //     wager_prize_type: this.state.wager_prize_type,
-        //     wager_type: this.state.wager_type,
-        //     closes_at: this.state.closes_at,
-        //     expires_at: this.state.expires_at,
-        // };
-        // if (this.state.wager_prize_type === "Monetary")
-        //     newWagerData["wager_buy_in"] = this.state.wager_buy_in;
-        // else 
-        //     newWagerData["wager_prize"] = this.state.wager_prize;
-        // if (this.appStore.validateNewWager(newWagerData)) {
-        //     this.createWager(newWagerData);
-        // } else {
-        //     this.appStore.showMessage("error", "Please Complete All Form fields.");
-        //     if (keys.length < 2) 
-        //         this.appStore.showMessage("error", "Must have at Minimum 2 Wager Options");
-        // }
-
-    }
-
-    addOption() {
-        const option = `option${uuid}`;
-        keys.push({
-            option: option,
-            value: ""
-        });
-        uuid++;
-        this.setState({
-            options: keys
-        });
-    }
-
-    removeOption(k: any) {
-        if (keys.length === 1) {
-            return;
+        const {appStore, state} = this;
+        e.preventDefault();
+        const wagerData = {
+            wager_id: state.wager_id,
+            wager_title: state.wager_title,
+            wager_description: state.wager_description,
+            share_type: state.share_type,
+            wager_prize_type: state.wager_prize_type,
+            wager_type: state.wager_type,
+            closes_at: state.closes_at,
+            expires_at: state.expires_at,
+        };
+        if (state.wager_prize_type === "Monetary")
+            wagerData["wager_buy_in"] = state.wager_buy_in;
+        else 
+            wagerData["wager_prize"] = state.wager_prize;
+        if (appStore.validateEditWager(wagerData)) {
+            this.editWager(wagerData);
+        } else {
+            appStore.showMessage("error", "Please Complete All Form fields.");
+            if (keys.length < 2) 
+                appStore.showMessage("error", "Must have at Minimum 2 Wager Options");
         }
-        keys = keys.filter((item: any) => item.option !== k.option);
-        this.setState({
-            options: keys
-        });
     }
 
     handleOptionChange(e: any) {
@@ -240,8 +218,8 @@ export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
         const name = target.name;
         const value = target.value;
         keys = keys.map((key: any) => {
-            if (key.option === name) {
-                key.value = value;
+            if (key.option_id === name) {
+                key.option_text = value;
                 return key;
             }
             return key;
@@ -249,6 +227,57 @@ export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
         this.setState({
             options: keys
         });
+    }
+
+    updateOptions(options: any) {
+        const {appStore} = this;
+        const promiseChain: any = [];
+        options.forEach((option: any) => {
+            const optionData = {
+                wager_id: option.wager_id,
+                option_id: option.option_id,
+                option_text: option.option_text
+            };
+            promiseChain.push(appStore.dataStore.updateWagerOption(optionData));
+        });
+        return Promise.all(promiseChain);
+    }
+
+    editWager(wagerData: any) {
+        const {appStore, state} = this;
+        appStore.dataStore.updateWager(wagerData)
+        .then(() => {
+            return this.updateOptions(state.options);
+        })
+        .then(() => {
+            return appStore.dataStore.getWagerById(state.wager_id);
+        })
+        .then((wager: any) => {
+            this.setWagerState(wager);
+            appStore.showMessage("success", "Wager Successfully Updated");
+        })
+        .catch((err: any) => {
+            console.error(err);
+            this.appStore.showMessage("error", "Something went wrong. Unable to create Wager");
+        });
+    }
+
+    removeWager() {
+        const {appStore, state} = this;
+        const wagerId = state.wager_id;
+        appStore.dataStore.removeWager(wagerId)
+        .then(() => {
+            appStore.navigateTo("/");
+            appStore.showMessage("success", "Wager, Option and Bets Successfully Removed.");
+        }).catch((err: any) => {
+            console.error(err);
+            appStore.showMessage("error", "Something went wrong. Unable to remove Wager");
+        });
+    }
+
+    handleBackToWagers() {
+        const {appStore} = this;
+        appStore.navigateTo("/");
     }
 
     render() {
@@ -328,9 +357,23 @@ export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
             );
         });
 
+        const formItems = keys.map((k: any) => {
+            return (
+                    <FormItem
+                    key={k}>
+                        <Input 
+                            name={k.option_id}
+                            value={k.option_text}
+                            onChange={this.handleOptionChange}
+                            placeholder="Wager Option" 
+                            className="sb_wagers__option-input"/>
+                    </FormItem>
+            );
+          });
+
         const drawer = (
             <Drawer
-                title="Create a Wager"
+                title="Edit Wager"
                 placement={"right"}
                 closable={false}
                 onClose={this.onClose}
@@ -433,25 +476,25 @@ export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
                     </FormItem>
 
                     <h5 className="sb_wagers__add-wager-input-label">Wager Options (2-3 Options): </h5>
-                    {/* {formItems} */}
-
-                    {keys.length < 3 &&
-                    <FormItem 
-                        className="sb_wagers__add-option-button">
-                        <Button type="dashed" onClick={this.addOption} style={{ width: "60%" }}>
-                            <Icon type="plus" /> Add Wager Option
-                        </Button>
-                    </FormItem>}
+                    {formItems}
 
                     <FormItem className="sb_wagers__submit-button">
                         <Button 
                             onClick={this.handleEditWager}
                             type="primary" 
                             htmlType="submit" >
-                            Create Wager
+                            Edit Wager
                         </Button>
                     </FormItem>
 
+                    <FormItem className="sb_wagers__submit-button">
+                        <Button 
+                            onClick={this.removeWager}
+                            type="danger"
+                            htmlType="submit" >
+                            Delete Wager
+                        </Button>
+                    </FormItem>
                 </Form>
             </Drawer>
         );
@@ -459,7 +502,24 @@ export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
         const content = (
             <div className="sb_wager__main-container">
                 <div className="sb_wager__card-container">
-                    <h2 className="sb_wager__wager-title">{this.state.wager_title}</h2>
+                    <h2 className="sb_wager__wager-title">
+                    <Button 
+                        onClick={this.handleBackToWagers}
+                        className="sb_wager__back">
+                        <Icon 
+                            className="sb_wager__back-icon"
+                            type="rollback" />
+                    </Button>
+                    {this.state.wager_title}
+                    {userIsOwner && 
+                    <Button 
+                        onClick={this.handleEditWager}
+                        className="sb_wager__edit-wager-button">
+                        <Icon 
+                            className="sb_wager__edit-wager-icon"
+                            type="edit" />
+                    </Button>}
+                    </h2>
                     <div className="sb_wager__wager-content-container">
                         <div className="sb_wager__wager-meta-data-container">
                             <div className="sb_wager__wager-meta-data-item">
@@ -525,15 +585,6 @@ export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
                         </div>
                     </div>
                 </div>
-
-                {userIsOwner && 
-                <Button 
-                    onClick={this.handleEditWager}
-                    className="sb_wager__edit-wager-button">
-                    <Icon 
-                        className="sb_wager__edit-wager-icon"
-                        type="edit" />
-                </Button>}
 
                 {drawer}
 

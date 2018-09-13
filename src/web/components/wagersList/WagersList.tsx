@@ -205,7 +205,7 @@ export class WagersList extends BaseComponent<WagersListProps, WagersListState> 
         const target = e.target;
         const name = target.name;
         const value = target.value;
-        keys = keys.map((key: any) => {
+        const updateOptions = this.state.options.map((key: any) => {
             if (key.option === name) {
                 key.value = value;
                 return key;
@@ -213,7 +213,7 @@ export class WagersList extends BaseComponent<WagersListProps, WagersListState> 
             return key;
         });
         this.setState({
-            options: keys
+            options: updateOptions
         });
     }
 

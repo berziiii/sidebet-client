@@ -266,6 +266,54 @@ export class APIClient {
         });
     }
 
+    static updateWager(wagerData: any) {
+        return new Promise((resolve, reject) => {
+            const {client, config} = this.createClient();
+            const url = `/api/wagers/${wagerData.wager_id}/update`;
+            delete wagerData.wager_id;
+            return client.put(url, wagerData, config)
+            .then((updatedWager: any) => {
+                resolve(updatedWager);
+            })
+            .catch((err) => {
+                console.error(err);
+                reject(err.response.data);
+            });
+        });
+    }
+
+    static updateWagerOption(optionData: any) {
+        return new Promise((resolve, reject) => {
+            const {client, config} = this.createClient();
+            const url = `/api/wagers/${optionData.wager_id}/options/${optionData.option_id}/update`;
+            delete optionData.wager_id;
+            delete optionData.option_id;
+            return client.put(url, optionData, config)
+            .then((updatedWager: any) => {
+                resolve(updatedWager);
+            })
+            .catch((err) => {
+                console.error(err);
+                reject(err.response.data);
+            });
+        });
+    }
+
+    static removeWager(wagerId: any) {
+        return new Promise((resolve, reject) => {
+            const {client, config} = this.createClient();
+            const url = `/api/wagers/${wagerId}/delete`;
+            return client.delete(url, config)
+            .then(() => {
+                resolve();
+            })
+            .catch((err) => {
+                console.error(err);
+                reject(err.response.data);
+            });
+        });
+    }
+
     // ********************* //
     // ******* ADMIN ******* //
     // ********************* //

@@ -106,4 +106,15 @@ export class AppStore {
         });
         return validDataset;
     }
+
+    public validateEditWager(wagerData: any) {
+        const keys = Object.keys(wagerData);
+        let validDataset = true;
+        _.each(keys, (key: any) => {
+            if (wagerData[key] === "" || wagerData[key] === undefined) {
+                validDataset = false;
+            }
+        });
+        return validDataset;
+    }
 }

@@ -19,6 +19,7 @@
   background: $dark-blue;
   color: $white;
   margin: 0px;
+  position: relative;
 }
 
 .sb_wager__wager-content-container {
@@ -185,9 +186,26 @@
   } 
 }
 
-.sb_wager__edit-wager-button {
-  position: fixed;
+.sb_wager__back {
+  position: absolute;
   top: 30px;
+  left: 40px;
+  background: transparent;
+  color: $white;
+  border: none;
+  .sb_wager__back-icon {
+    font-size: 2em;
+  }
+  &:hover, &:visited, &:focus {
+    background: transparent;
+    color: $white;
+    border: none;
+  }
+}
+
+.sb_wager__edit-wager-button {
+  position: absolute;
+  top: 10px;
   right: 40px;
   width: 75px;
   height: 75px;

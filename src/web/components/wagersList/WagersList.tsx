@@ -47,6 +47,7 @@ export class WagersList extends BaseComponent<WagersListProps, WagersListState> 
         this.handleOptionChange = this.handleOptionChange.bind(this);
         this.createWager = this.createWager.bind(this);
         this.createWagerOptions = this.createWagerOptions.bind(this);
+        this.handleWagerTypeChange = this.handleWagerTypeChange.bind(this);
     }
 
     componentDidMount() {
@@ -96,6 +97,10 @@ export class WagersList extends BaseComponent<WagersListProps, WagersListState> 
 
     handleAddWager(e: any) {
         this.setState({visibleDrawer: true});
+    }
+
+    handleWagerTypeChange(e: any) {
+        this.setState({wager_type: e});
     }
 
     handleWagerPrizeChange(value: any) {
@@ -221,16 +226,16 @@ export class WagersList extends BaseComponent<WagersListProps, WagersListState> 
         const MonetaryPrize = this.state.wager_prize_type === "Monetary";
         let wagersList: any = [];
         if (_.isArray(this.state.wagers)) {
-            wagersList = this.state.wagers.map((wager: any) => {
+            wagersList = this.state.wagers.map((wager: any, i: any) => {
                 return (
-                    <ComponentFactory.WagerCard key={wager.wager_id} wager={wager} />
+                    <ComponentFactory.WagerCard key={`wagerCard${i}`} wager={wager} />
                 );
             });
         }
-        const formItems = keys.map((k: any) => {
+        const formItems = keys.map((k: any, i: any) => {
             return (
                     <FormItem
-                    key={k}>
+                    key={`createOption${i}`}>
                         <Input 
                             name={k.option}
                             value={k.value}
@@ -246,8 +251,8 @@ export class WagersList extends BaseComponent<WagersListProps, WagersListState> 
                         ) : null}
                     </FormItem>
             );
-          });
-
+        });
+        
         const drawer = (
             <Drawer
                 title="Create a Wager"
@@ -280,7 +285,10 @@ export class WagersList extends BaseComponent<WagersListProps, WagersListState> 
 
                     <FormItem>
                         <h5 className="sb_wagers__add-wager-input-label">Wager Type:</h5>
-                        <Select defaultValue={this.state.wager_type} className="sb_wagers__add-wager-input">
+                        <Select 
+                            defaultValue={this.state.wager_type} 
+                            onChange={this.handleWagerTypeChange}
+                            className="sb_wagers__add-wager-input">
                             <Option value="Head to Head">Head to Head</Option>
                             <Option value="Over / Under">Over / Under</Option>
                             <Option value="Futures / Outright">Futures / Outright</Option>

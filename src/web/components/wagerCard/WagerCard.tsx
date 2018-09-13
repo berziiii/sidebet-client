@@ -4,6 +4,7 @@ import {Observer} from "mobx-react";
 import { Icon } from "antd";
 import {BaseComponent} from "../BaseComponent";
 import {WagerCardProps, WagerCardState} from "./WagerCardInterface";
+import * as moment from "moment";
 
 export class WagerCard extends BaseComponent<WagerCardProps, WagerCardState> {
     constructor(props: WagerCardProps) {
@@ -21,6 +22,29 @@ export class WagerCard extends BaseComponent<WagerCardProps, WagerCardState> {
 
     render() {
         const MonetaryPrize = this.props.wager.wager_prize_type === "Monetary";
+        const {props} = this;
+
+        const wagerStatus = (
+            <>
+                {!_.isNil(props.wager.expires_at) && 
+                    <>
+                        <div className="sb_wager-list__wager_status_container">
+                            {moment().format() < props.wager.expires_at && 
+                            <div className="sb_wager__status">
+                                <div className="open-status"/>
+                                <h5 className="open">Open</h5>
+                            </div>}
+                            {moment().format() >= props.wager.expires_at && 
+                            <div className="sb_wager__status">
+                                <div className="closed-status"/>
+                                <h5 className="closed">Closed</h5>
+                            </div>}
+                        </div>
+                    </>
+                }
+            </>
+        );
+
         return(
             <Observer>
             {() => 
@@ -30,6 +54,7 @@ export class WagerCard extends BaseComponent<WagerCardProps, WagerCardState> {
                             <a onClick={() => this.handleWagerSelect(this.props.wager)}>
                                 <h2 className="sb_wagers__wager-title">{this.props.wager.wager_title}</h2>
                                 <div className="sb_wagers__wager-details">
+                                    {wagerStatus}
                                     <p className="sb_wagers__wager-description">{this.props.wager.wager_description}</p>    
                                 </div>
                                 <div className="sb_wager__wager-metainfo-container">

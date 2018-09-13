@@ -55,7 +55,8 @@ export class AdminUser extends BaseComponent<AdminUserProps, AdminUserState> {
         })
         .catch((err: any) => {
             console.error(err);
-            this.appStore.showMessage("error", "Something went wrong. Unable to load User information");
+            this.appStore.navigateTo("/notfound");
+            this.appStore.showMessage("error", "Something went wrong. Unable to load User information or User doesn't exist");
         });
     }
 

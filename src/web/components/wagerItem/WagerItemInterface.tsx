@@ -5,6 +5,8 @@ export interface WagerItemProps {
 
 export interface WagerItemState {
     loading?: boolean;
+    modalVisible?: boolean;
+    dirtyData?: boolean;
     wager_id?: string | undefined;
     wager_title?: string | undefined;
     wager_description?: string | undefined;

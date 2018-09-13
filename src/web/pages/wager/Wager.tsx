@@ -11,9 +11,6 @@ const {Content} = Layout;
 export class Wager extends BaseComponent {
     constructor(props: any) {
         super(props);
-        this.state = {
-            wager: undefined
-        };
     }
     componentDidMount() {
     }

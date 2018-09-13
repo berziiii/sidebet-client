@@ -234,6 +234,7 @@
 @media(max-width: 768px) {
   .sb_wager__wager-content-container {
     display: block;
+    height: auto;
   }
 
   .sb_wager__wager-meta-data-container {
@@ -259,19 +260,21 @@
     display: block;
     width: 100%!important;
   }
+  .sb_wager__wager-details {
+    padding: 0px;
+  }
   .sb_wager__wager-title {
     background: $white;
-    padding: 15px 0px;
     color: $dark-blue;
-    position: fixed;
+    padding: 15px 0px;
+    position: sticky;
     top: 52px;
     z-index: 10;
-    border-bottom: .5px solid $grey;
   }
   .sb_wager__back {
     color: $dark-blue;
     top: 18px;
-    left: 10px;
+    left: 5px;
     .sb_wager__back-icon {
       font-size: 2.2em;
     }
@@ -297,7 +300,7 @@
   .sb_wager__wager-description {
     padding: 50px 25px;
   }
-  .sb_wager__wager-details {
-    padding-top: 125px;
+  .sb_wager__header-text {
+    margin: 0px 50px 15px;
   }
 }

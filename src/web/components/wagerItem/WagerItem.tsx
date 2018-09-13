@@ -794,7 +794,7 @@ export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
         const content = (
             <div className="sb_wager__main-container">
                 <div className="sb_wager__card-container">
-                    <h2 className="sb_wager__wager-title">
+                    <div className="sb_wager__wager-title">
                     <Button 
                         onClick={this.handleBackToWagers}
                         className="sb_wager__back">
@@ -802,7 +802,8 @@ export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
                             className="sb_wager__back-icon"
                             type="rollback" />
                     </Button>
-                    {state.wager_title}
+                    <h2 className="sb_wager__header-text">{state.wager_title}</h2>
+                    
                     {userIsOwner && !wagerClosed && 
                     <Button 
                         onClick={this.handleEditWager}
@@ -811,14 +812,13 @@ export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
                             className="sb_wager__edit-wager-icon"
                             type="edit" />
                     </Button>}
-                    </h2>
+                    {appStore.state.mode === AppMode.Mobile &&
+                        mobileSideContent}
+                    </div>
                     <div className="sb_wager__wager-content-container">
 
                         {appStore.state.mode === AppMode.Desktop &&
                         sideContent}
-
-                        {appStore.state.mode === AppMode.Mobile &&
-                        mobileSideContent}
                         <div className="sb_wager__wager-details">
                             <p className="sb_wager__wager-description">{state.wager_description}</p> 
                             <h2 className="sb_wager__options-header"> Place a Bet! </h2>  

@@ -24,10 +24,10 @@
 }
 
 .ant-collapse.sb_wager__details-collaspe {
-  position: fixed;
-  margin-top: 66px;
+  // position: sticky;
+  // top: 115px;
   width: 100%;
-  z-index: 10;
+  // z-index: 10;
 }
 
 .ant-collapse-content > .ant-collapse-content-box {

@@ -281,11 +281,13 @@ export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
     }
 
     render() {
-        const MonetaryPrize = this.state.wager_prize_type === "Monetary";
-        const userIsOwner = this.state.owner_id === this.appStore.dataStore.authorizedUser.user_id;
+        const {appStore, state} = this;
+        const MonetaryPrize = state.wager_prize_type === "Monetary";
+        const userIsOwner = state.owner_id === appStore.dataStore.authorizedUser.user_id;
+        const wagerClosed = moment().format() >= state.closes_at;
         const ownerInitial = () => {
-            if (!_.isNil(this.state.owner))
-                return this.state.owner.charAt(0).toUpperCase();
+            if (!_.isNil(state.owner))
+                return state.owner.charAt(0).toUpperCase();
             return "U";
         };
 
@@ -295,14 +297,14 @@ export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
 
         const wagerStatus = (
             <>
-                {!_.isNil(this.state.expires_at) && 
+                {!_.isNil(state.expires_at) && 
                     <>
-                        {moment().format() < this.state.expires_at && 
+                        {moment().format() < state.expires_at && 
                         <div className="sb_wager__status">
                             <div className="open-status"/>
                             <h5 className="open">Open</h5>
                         </div>}
-                        {moment().format() >= this.state.expires_at && 
+                        {moment().format() >= state.expires_at && 
                         <div className="sb_wager__status">
                             <div className="closed-status"/>
                             <h5 className="closed">Closed</h5>
@@ -312,7 +314,7 @@ export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
             </>
         );
 
-        const optionBets = (option: any) => this.state.bets.map((bet: any) => {
+        const optionBets = (option: any) => state.bets.map((bet: any) => {
             return (
                 <>
                     {bet.option_id === option.option_id && 
@@ -323,9 +325,8 @@ export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
             );
         });
 
-        const wagerOptions = this.state.options.map((option: any) => {
-            const {state} = this;
-            const optionWidth = 100 / this.state.options.length;
+        const wagerOptions = state.options.map((option: any) => {
+            const optionWidth = 100 / state.options.length;
             let hasBets = false;
             state.bets.forEach((bet: any) => {
                 if (bet.option_id === option.option_id)
@@ -335,15 +336,31 @@ export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
             return (
                 <>
                     <div className="sb_wager__option-wrapper" style={{width: `${optionWidth}%`}}>
-                        {userBetOption && 
+                        {userBetOption && !wagerClosed &&
                         <Button 
                             className="sb_wager__option-button sb_wager__user-selected-option"
                             onClick={() => this.handleBet(option)}>
                             {option.option_text}
                         </Button>}
 
-                        {!userBetOption && 
+                        {userBetOption && wagerClosed &&
                         <Button 
+                            disabled
+                            className="sb_wager__option-button sb_wager__user-selected-option"
+                            onClick={() => this.handleBet(option)}>
+                            {option.option_text}
+                        </Button>}
+
+                        {!userBetOption && !wagerClosed &&
+                        <Button 
+                            className="sb_wager__option-button"
+                            onClick={() => this.handleBet(option)}>
+                            {option.option_text}
+                        </Button>}
+
+                        {!userBetOption && wagerClosed &&
+                        <Button 
+                            disabled
                             className="sb_wager__option-button"
                             onClick={() => this.handleBet(option)}>
                             {option.option_text}
@@ -377,7 +394,7 @@ export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
                 placement={"right"}
                 closable={false}
                 onClose={this.onClose}
-                visible={this.state.visibleDrawer}
+                visible={state.visibleDrawer}
                 className="sb_wagers__add-wager-drawer"
             >
                 <Form onSubmit={this.submitEditWager}>
@@ -385,7 +402,7 @@ export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
                         <h5 className="sb_wagers__add-wager-input-label">Wager Title:</h5>
                         <Input 
                             type="text" 
-                            value={this.state.wager_title} 
+                            value={state.wager_title} 
                             name="wager_title"
                             onChange={this.handleTextInputChange}
                             className="sb_wagers__add-wager-input"/>
@@ -394,7 +411,7 @@ export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
                     <FormItem>
                         <h5 className="sb_wagers__add-wager-input-label">Wager Description:</h5>
                         <TextArea 
-                            value={this.state.wager_description} 
+                            value={state.wager_description} 
                             name="wager_description"
                             onChange={this.handleTextInputChange}
                             className="sb_wagers__add-wager-input"/>
@@ -402,7 +419,7 @@ export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
 
                     <FormItem>
                         <h5 className="sb_wagers__add-wager-input-label">Wager Type:</h5>
-                        <Select defaultValue={this.state.wager_type} className="sb_wagers__add-wager-input">
+                        <Select defaultValue={state.wager_type} className="sb_wagers__add-wager-input">
                             <Option value="Head to Head">Head to Head</Option>
                             <Option value="Over / Under">Over / Under</Option>
                             <Option value="Futures / Outright">Futures / Outright</Option>
@@ -412,7 +429,7 @@ export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
 
                     <FormItem>
                         <h5 className="sb_wagers__add-wager-input-label">Share Type:</h5>
-                        <Select defaultValue={this.state.share_type} disabled className="sb_wagers__add-wager-input">
+                        <Select defaultValue={state.share_type} disabled className="sb_wagers__add-wager-input">
                             <Option value="Public">Public</Option>
                             <Option value="Private">Private</Option>
                         </Select>
@@ -421,7 +438,7 @@ export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
                     <FormItem>
                         <h5 className="sb_wagers__add-wager-input-label">Wager Prize Type:</h5>
                         <Select 
-                            defaultValue={this.state.wager_prize_type} 
+                            defaultValue={state.wager_prize_type} 
                             className="sb_wagers__add-wager-input"
                             onChange={this.handleWagerPrizeChange}
                             >
@@ -438,7 +455,7 @@ export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
                             className="sb_wagers__add-wager-input"
                             type="number"
                             onChange={this.handleTextInputChange}
-                            value={this.state.wager_buy_in}
+                            value={state.wager_buy_in}
                             name="wager_buy_in"/>
                     </FormItem>}
 
@@ -449,7 +466,7 @@ export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
                             className="sb_wagers__add-wager-input"
                             type="text"
                             onChange={this.handleTextInputChange}
-                            value={this.state.wager_prize}
+                            value={state.wager_prize}
                             name="wager_prize"/>
                     </FormItem>}
 
@@ -458,7 +475,7 @@ export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
                         <DatePicker 
                             showTime
                             format="YYYY-MM-DD HH:mm:ss"
-                            defaultValue={moment(this.state.closes_at, "YYYY-MM-DD HH:mm:ss")}
+                            defaultValue={moment(state.closes_at, "YYYY-MM-DD HH:mm:ss")}
                             className="sb_wagers__add-wager-input"
                             onChange={(d, ds) => this.handleBettingClosesChange(d, ds)}
                             placeholder="Betting Closes at..." />
@@ -469,7 +486,7 @@ export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
                         <DatePicker 
                             showTime
                             format="YYYY-MM-DD HH:mm:ss"
-                            defaultValue={moment(this.state.expires_at, "YYYY-MM-DD HH:mm:ss")}
+                            defaultValue={moment(state.expires_at, "YYYY-MM-DD HH:mm:ss")}
                             className="sb_wagers__add-wager-input"
                             onChange={(d, ds) => this.handleBetExpiresAt(d, ds)}
                             placeholder="Wager Expires at..." />
@@ -510,8 +527,8 @@ export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
                             className="sb_wager__back-icon"
                             type="rollback" />
                     </Button>
-                    {this.state.wager_title}
-                    {userIsOwner && 
+                    {state.wager_title}
+                    {userIsOwner && !wagerClosed && 
                     <Button 
                         onClick={this.handleEditWager}
                         className="sb_wager__edit-wager-button">
@@ -523,22 +540,22 @@ export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
                     <div className="sb_wager__wager-content-container">
                         <div className="sb_wager__wager-meta-data-container">
                             <div className="sb_wager__wager-meta-data-item">
-                                <h5><span>Owner</span> <div className="sb_wager__wager-meta-data-content">{ownerAvatar}{this.state.owner}</div></h5>
+                                <h5><span>Owner</span> <div className="sb_wager__wager-meta-data-content">{ownerAvatar}{state.owner}</div></h5>
                             </div>
                             <div className="sb_wager__wager-meta-data-item">
                                 <h5><span>Status</span> <div className="sb_wager__wager-meta-data-content">{wagerStatus}</div></h5>
                             </div>
                             <div className="sb_wager__wager-meta-data-item">
-                                <h5><span>Betting Closes</span> <div className="sb_wager__wager-meta-data-content">{moment(this.state.closes_at).format("llll")}</div></h5>
+                                <h5><span>Betting Closes</span> <div className="sb_wager__wager-meta-data-content">{moment(state.closes_at).format("llll")}</div></h5>
                             </div>
                             <div className="sb_wager__wager-meta-data-item">
-                                <h5><span>Wager Closes</span> <div className="sb_wager__wager-meta-data-content">{moment(this.state.expires_at).format("llll")}</div></h5>
+                                <h5><span>Wager Closes</span> <div className="sb_wager__wager-meta-data-content">{moment(state.expires_at).format("llll")}</div></h5>
                             </div>
                             <div className="sb_wager__wager-meta-data-item">
                                 <h5>
                                     <span>Wager Type</span>
                                     <div className="sb_wager__wager-meta-data-content">
-                                        <Icon type="star" /> {this.state.wager_type}
+                                        <Icon type="star" /> {state.wager_type}
                                     </div>
                                 </h5>
                             </div>
@@ -546,7 +563,7 @@ export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
                                     <h5>
                                         <span>Prize Type</span>
                                         <div className="sb_wager__wager-meta-data-content">
-                                            <Icon type="gift" /> {this.state.wager_prize_type}
+                                            <Icon type="gift" /> {state.wager_prize_type}
                                         </div>
                                     </h5>
                                 </div>
@@ -556,7 +573,7 @@ export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
                                     <h5>
                                         <span>Buy In Amount</span>
                                         <div className="sb_wager__wager-meta-data-content">
-                                            ${this.state.wager_buy_in}
+                                            ${state.wager_buy_in}
                                         </div>
                                     </h5>   
                                 </div>
@@ -567,17 +584,17 @@ export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
                                     <h5>
                                         <span>Prize</span>
                                         <div className="sb_wager__wager-meta-data-content">
-                                            <Icon type="trophy" /> {this.state.wager_prize}
+                                            <Icon type="trophy" /> {state.wager_prize}
                                         </div>
                                     </h5>
                                 </div>
                             </>}
                             <div className="sb_wager__wager-meta-data-item">
-                                <h5><span>Last Modified</span> <div className="sb_wager__wager-meta-data-content">{moment(this.state.last_modified).format("llll")}</div></h5>
+                                <h5><span>Last Modified</span> <div className="sb_wager__wager-meta-data-content">{moment(state.last_modified).format("llll")}</div></h5>
                             </div>
                         </div>
                         <div className="sb_wager__wager-details">
-                            <p className="sb_wager__wager-description">{this.state.wager_description}</p> 
+                            <p className="sb_wager__wager-description">{state.wager_description}</p> 
                             <h2> Place a Bet! </h2>  
                             <div className="sb_wager__wager-options-container">
                                 {wagerOptions}
@@ -595,9 +612,9 @@ export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
             <Observer>
             {() => 
                 <>
-                    {this.state.loading && 
+                    {state.loading && 
                     <ComponentFactory.Loading />}
-                    {!this.state.loading && 
+                    {!state.loading && 
                     content}
                 </>}
             </Observer>

@@ -13,8 +13,8 @@ export interface WagerItemState {
     wager_prize_type?: string | undefined;
     wager_type?: string | undefined;
     wager_buy_in?: string | undefined;
-    closes_at?: string | undefined;
-    expires_at?: string | undefined;
+    closes_at?: any;
+    expires_at?: any;
     options?: any | undefined;
     bets?: any | undefined;
     owner?: any | undefined;

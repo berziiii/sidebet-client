@@ -371,12 +371,12 @@ export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
             <>
                 {!_.isNil(state.expires_at) && 
                     <>
-                        {moment().format() < state.expires_at && 
+                        {moment().format() < state.closes_at && 
                         <div className="sb_wager__status">
                             <div className="open-status"/>
                             <h5 className="open">Open</h5>
                         </div>}
-                        {moment().format() >= state.expires_at && 
+                        {moment().format() >= state.closes_at && 
                         <div className="sb_wager__status">
                             <div className="closed-status"/>
                             <h5 className="closed">Closed</h5>

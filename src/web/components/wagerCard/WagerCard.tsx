@@ -29,12 +29,12 @@ export class WagerCard extends BaseComponent<WagerCardProps, WagerCardState> {
                 {!_.isNil(props.wager.expires_at) && 
                     <>
                         <div className="sb_wager-list__wager_status_container">
-                            {moment().format() < props.wager.expires_at && 
+                            {moment().format() < props.wager.closes_at && 
                             <div className="sb_wager__status">
                                 <div className="open-status"/>
                                 <h5 className="open">Open</h5>
                             </div>}
-                            {moment().format() >= props.wager.expires_at && 
+                            {moment().format() >= props.wager.closes_at && 
                             <div className="sb_wager__status">
                                 <div className="closed-status"/>
                                 <h5 className="closed">Closed</h5>

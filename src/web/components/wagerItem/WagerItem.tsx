@@ -23,6 +23,7 @@ export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
             loading: true,
             dirtyData: false,
             modalVisible: false,
+            visibleWinnerModal: false,
             visibleDrawer: false,
             wager_id: undefined,
             wager_title: undefined,
@@ -38,6 +39,9 @@ export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
             options: [],
             owner: undefined,
             userBet: undefined,
+            wager_status: undefined,
+            winning_option: undefined,
+            proposedWinner: undefined,
         };
 
         this.getWagerDetails = this.getWagerDetails.bind(this);
@@ -58,6 +62,11 @@ export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
         this.handleRemoveWagerCancel = this.handleRemoveWagerCancel.bind(this);
         this.handleRemoveWagerSubmit = this.handleRemoveWagerSubmit.bind(this);
         this.handleWagerTypeChange = this.handleWagerTypeChange.bind(this);
+        this.handleSubmitWinner = this.handleSubmitWinner.bind(this);
+        this.checkHasWinner = this.checkHasWinner.bind(this);
+        this.showWinnerModal = this.showWinnerModal.bind(this);
+        this.handleWinnerOption = this.handleWinnerOption.bind(this);
+        // this.checkWagerStatus = this.checkWagerStatus.bind(this);
     }
 
     componentDidMount() {
@@ -66,8 +75,14 @@ export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
         const wagerId = match.params.wagerId;
 
         this.getWagerDetails(wagerId)
+        // .then((wager: any) => {
+        //     return this.checkWagerStatus(wager);
+        // })
         .then((wager: any) => {
             this.setWagerState(wager);
+            setTimeout(() => {
+                this.showWinnerModal();
+            }, 1000);
         })
         .catch((err: any) => {
             console.error(err);
@@ -75,6 +90,20 @@ export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
             this.appStore.showMessage("error", "Something went wrong. Unable to get Wager or Wager doesn't exist");
         });
     }
+
+    // checkWagerStatus(wager: any) {
+    //     let wagerStatus = "Open";
+    //     const currentTime = moment().format();
+    //     if (wagerStatus !== "Complete") {
+    //         if (currentTime >= wager.expires_at && wager.wager_status !== "Pending Review")
+    //             wagerStatus = "Pending Review";
+    //         else if (currentTime >= wager.closes_at && wager.wager_status !== "Closed")
+    //             wagerStatus = "Closed";
+    //         else if (currentTime < wager.closes_at) {
+    //             wagerStatus = "Closed";
+    //         }
+    //     }
+    // }
 
     setWagerState(wager: any) {
         const {appStore} = this;
@@ -88,6 +117,7 @@ export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
             loading: false,
             visibleDrawer: false,
             modalVisible: false,
+            visibleWinnerModal: false,
             dirtyData: false,
             wager_id: wager.wager_id,
             wager_title: wager.wager_title,
@@ -105,12 +135,15 @@ export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
             owner_id: wager.owner.user_id,
             created_at: wager.created_at,
             last_modified: wager.last_modified,
-            userBet: userBet
+            userBet: userBet,
+            winning_option: wager.winning_option,
+            wager_status: wager.wager_status
         };
         this.setState({
             loading: false,
             visibleDrawer: false,
             modalVisible: false,
+            visibleWinnerModal: false,
             dirtyData: false,
             wager_id: wager.wager_id,
             wager_title: wager.wager_title,
@@ -128,7 +161,9 @@ export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
             owner_id: wager.owner.user_id,
             created_at: wager.created_at,
             last_modified: wager.last_modified,
-            userBet: userBet
+            userBet: userBet,
+            winning_option: wager.winning_option,
+            wager_status: wager.wager_status,
         });
     }
 
@@ -352,11 +387,58 @@ export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
         });
     }
 
+    showWinnerModal() {
+        if (!this.state.winning_option && moment().format() >= this.state.expires_at && this.state.owner_id === this.appStore.dataStore.authorizedUser.user_id)
+            this.setState({
+                visibleWinnerModal: true,
+            });
+    }
+
+    checkHasWinner(options: any) {
+        let winningOption = false;
+        options.forEach((option: any) => {
+            if (option.is_winner)
+                winningOption = option;
+        });
+        return winningOption;
+    }
+
+    handleWinnerOption(option: any) {
+        this.setState({
+            proposedWinner: option,
+        });
+    }
+    
+    handleSubmitWinner(e: any) {
+        e.preventDefault();
+        if (this.state.proposedWinner) {
+            const wagerData = {
+                wager_id: this.state.proposedWinner.wager_id,
+                winning_option: this.state.proposedWinner.option_id,
+                wager_status: "Complete",
+            };
+            this.appStore.dataStore.updateWager(wagerData)
+            .then((updatedWager: any) => {
+                return this.getWagerDetails(updatedWager.wager_id);
+            })
+            .then((updatedWager: any) => {
+                this.setWagerState(updatedWager);
+            })
+            .catch((err: any) => {
+                console.error(err);
+                this.appStore.showMessage("error", "Something went wrong. Unable to Update Winning Option");
+            });
+        } else {
+            this.appStore.showMessage("error", "Please select a Winning Option");
+        }
+    }
+    
     render() {
         const {appStore, state} = this;
         const MonetaryPrize = state.wager_prize_type === "Monetary";
         const userIsOwner = state.owner_id === appStore.dataStore.authorizedUser.user_id;
-        const wagerClosed = moment().format() >= state.closes_at;
+        const showWinnerModal = (_.isNil(this.state.winning_option) && this.state.wager_status === "Pending Review" && userIsOwner);
+        const wagerOpen = this.state.wager_status === "Open";
         const ownerInitial = () => {
             if (!_.isNil(state.owner))
                 return state.owner.charAt(0).toUpperCase();
@@ -371,15 +453,25 @@ export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
             <>
                 {!_.isNil(state.expires_at) && 
                     <>
-                        {moment().format() < state.closes_at && 
+                        {this.state.wager_status === "Open" &&
                         <div className="sb_wager__status">
                             <div className="open-status"/>
                             <h5 className="open">Open</h5>
                         </div>}
-                        {moment().format() >= state.closes_at && 
+                        {this.state.wager_status === "Closed" &&
                         <div className="sb_wager__status">
                             <div className="closed-status"/>
                             <h5 className="closed">Closed</h5>
+                        </div>}
+                        {this.state.wager_status === "Pending Review" &&
+                        <div className="sb_wager__status">
+                            <div className="pending-status"/>
+                            <h5 className="pending">Pending Review</h5>
+                        </div>}
+                        {this.state.wager_status === "Complete" &&
+                        <div className="sb_wager__status">
+                            <div className="complete-status"/>
+                            <h5 className="complete">Complete</h5>
                         </div>}
                     </>
                 }
@@ -431,56 +523,52 @@ export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
             return (
                 <>
                     {appStore.state.mode === AppMode.Desktop && 
-                        <div key={`optionWrapper${i}`} className="sb_wager__option-wrapper" style={{width: `${optionWidth}%`}}>
-                        {userBetOption && !wagerClosed &&
-                        <Button 
-                            // key={`optionButton${i}`}
-                            className="sb_wager__option-button sb_wager__user-selected-option"
-                            onClick={() => this.handleBet(option)}>
-                            {option.option_text}
-                        </Button>}
+                        <div key={`optionWrapper${i}`} className="sb_wager__option-wrapper" style={{width: `${optionWidth}%`}}>                            
+                            {userBetOption && wagerOpen &&
+                            <Button 
+                                className={`sb_wager__option-button sb_wager__user-selected-option ${(!_.isNil(this.state.winning_option) && this.state.winning_option === option.option_id) ? "sb_wager__winning-option" : "sb_wager__non-winning-option" }`}
+                                onClick={() => this.handleBet(option)}>
+                                {option.option_text}
+                            </Button>}
 
-                        {userBetOption && wagerClosed &&
-                        <Button 
-                            disabled
-                            // key={`optionButton${i}`}
-                            className="sb_wager__option-button sb_wager__user-selected-option"
-                            onClick={() => this.handleBet(option)}>
-                            {option.option_text}
-                        </Button>}
+                            {userBetOption && !wagerOpen &&
+                            <Button 
+                                disabled
+                                className={`sb_wager__option-button sb_wager__user-selected-option ${(!_.isNil(this.state.winning_option) && this.state.winning_option === option.option_id) ? "sb_wager__winning-option" : "sb_wager__non-winning-option" }`}
+                                onClick={() => this.handleBet(option)}>
+                                {option.option_text}
+                            </Button>}
 
-                        {!userBetOption && !wagerClosed &&
-                        <Button 
-                            // key={`optionButton${i}`}
-                            className="sb_wager__option-button"
-                            onClick={() => this.handleBet(option)}>
-                            {option.option_text}
-                        </Button>}
+                            {!userBetOption && wagerOpen &&
+                            <Button 
+                                className={`sb_wager__option-button ${(!_.isNil(this.state.winning_option) && this.state.winning_option === option.option_id) ? "sb_wager__winning-option" : "sb_wager__non-winning-option" }`}
+                                onClick={() => this.handleBet(option)}>
+                                {option.option_text}
+                            </Button>}
 
-                        {!userBetOption && wagerClosed &&
-                        <Button 
-                        // key={`optionButton${i}`}
-                            disabled
-                            className="sb_wager__option-button"
-                            onClick={() => this.handleBet(option)}>
-                            {option.option_text}
-                        </Button>}
+                            {!userBetOption && !wagerOpen &&
+                            <Button 
+                                disabled
+                                className={`sb_wager__option-button ${(!_.isNil(this.state.winning_option) && this.state.winning_option === option.option_id) ? "sb_wager__winning-option" : "sb_wager__non-winning-option" }`}
+                                onClick={() => this.handleBet(option)}>
+                                {option.option_text}
+                            </Button>}
 
-                        {hasBets && optionBets(option)}
-                        {!hasBets &&
-                            <h4 key={`noBets${i}`} className="sb_wager__no-bets"> No Bets</h4>}
-                    </div>}
+                            {hasBets && optionBets(option)}
+                            {!hasBets &&
+                                <h4 key={`noBets${i}`} className="sb_wager__no-bets"> No Bets</h4>}
+                        </div>}
                     
                     {appStore.state.mode === AppMode.Mobile && 
                     <div key={`optionWrapper${i}`} className="sb_wager__option-wrapper" style={{width: "100%"}}>
-                        {userBetOption && !wagerClosed &&
+                        {userBetOption && wagerOpen &&
                         <Button 
                             className="sb_wager__option-button sb_wager__user-selected-option"
                             onClick={() => this.handleBet(option)}>
                             {option.option_text}
                         </Button>}
 
-                        {userBetOption && wagerClosed &&
+                        {userBetOption && !wagerOpen &&
                         <Button 
                             disabled
                             className="sb_wager__option-button sb_wager__user-selected-option"
@@ -488,14 +576,14 @@ export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
                             {option.option_text}
                         </Button>}
 
-                        {!userBetOption && !wagerClosed &&
+                        {!userBetOption && wagerOpen &&
                         <Button 
                             className="sb_wager__option-button"
                             onClick={() => this.handleBet(option)}>
                             {option.option_text}
                         </Button>}
 
-                        {!userBetOption && wagerClosed &&
+                        {!userBetOption && !wagerOpen &&
                         <Button 
                             disabled
                             className="sb_wager__option-button"
@@ -521,7 +609,6 @@ export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
                     <FormItem
                         key={`formItem${i}`}>
                         <Input 
-                            key={`formInput${i}`}
                             name={k.option_id}
                             value={k.option_text}
                             onChange={this.handleOptionChange}
@@ -790,6 +877,37 @@ export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
                 </div>
             </div>
         );
+
+        const winnerModal = (
+            <div className="sb_wager__remove-wager-container">
+                <Modal
+                className="sb_wager__winner-modal"
+                maskClosable={false}
+                visible={this.state.visibleWinnerModal}
+                footer={[
+                    <Button key="submit" type="primary" onClick={this.handleSubmitWinner}>
+                      SELECT
+                    </Button>
+                  ]}
+                >
+                    <div className="sb_wager__winner-options-container">
+                        <h3>Select Winning Option:</h3>
+                        {this.state.options.map((option: any, i: any) => {
+                            return (
+                                <>
+                                    <div key={`winningOption${i}`}className="sb_wager__winner-option">
+                                        <Button
+                                        onClick={() => this.handleWinnerOption(option)}
+                                        className={(this.state.proposedWinner && this.state.proposedWinner.option_id === option.option_id) ? "sb_wager__user-selected-option" : ""}
+                                        > {option.option_text} </Button>
+                                    </div>
+                                </>
+                            );
+                        })}
+                    </div>
+                </Modal>
+            </div>
+        );
         
         const content = (
             <div className="sb_wager__main-container">
@@ -804,7 +922,7 @@ export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
                     </Button>
                     <h2 className="sb_wager__header-text">{state.wager_title}</h2>
                     
-                    {userIsOwner && !wagerClosed && 
+                    {userIsOwner && wagerOpen && 
                     <Button 
                         onClick={this.handleEditWager}
                         className="sb_wager__edit-wager-button">
@@ -831,6 +949,7 @@ export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
 
                 {drawer}
                 {removeWagerConfirmation}
+                {showWinnerModal && winnerModal}
             </div>
         );
 

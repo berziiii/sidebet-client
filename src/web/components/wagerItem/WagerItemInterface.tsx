@@ -15,6 +15,7 @@ export interface WagerItemState {
     wager_prize_type?: string | undefined;
     wager_type?: string | undefined;
     wager_buy_in?: string | undefined;
+    wager_status?: string | undefined;
     closes_at?: any;
     expires_at?: any;
     options?: any | undefined;
@@ -25,4 +26,7 @@ export interface WagerItemState {
     owner_id?: any | undefined;
     userBet?: any | undefined;
     visibleDrawer?: any | undefined;
+    visibleWinnerModal?: any | undefined;
+    winning_option?: any | undefined;
+    proposedWinner?: any | undefined;
 }

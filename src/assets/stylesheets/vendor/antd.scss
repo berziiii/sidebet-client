@@ -44,6 +44,12 @@
   padding: 0 1px;
 }
 
+.sb_wager__winner-modal {
+  .ant-modal-close-x {
+    display: none;
+  }
+}
+
 @media (max-width: 768px) {
   .ant-table-body {
     min-height: 75vh!important;

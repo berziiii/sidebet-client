@@ -4,7 +4,7 @@ import {Observer} from "mobx-react";
 import { Icon } from "antd";
 import {BaseComponent} from "../BaseComponent";
 import {WagerCardProps, WagerCardState} from "./WagerCardInterface";
-import * as moment from "moment";
+// import * as moment from "moment";
 
 export class WagerCard extends BaseComponent<WagerCardProps, WagerCardState> {
     constructor(props: WagerCardProps) {
@@ -23,21 +23,31 @@ export class WagerCard extends BaseComponent<WagerCardProps, WagerCardState> {
     render() {
         const MonetaryPrize = this.props.wager.wager_prize_type === "Monetary";
         const {props} = this;
-
+        const status = props.wager.wager_status;
         const wagerStatus = (
             <>
                 {!_.isNil(props.wager.expires_at) && 
                     <>
                         <div className="sb_wager-list__wager_status_container">
-                            {moment().format() < props.wager.closes_at && 
+                            {status === "Open" && 
                             <div className="sb_wager__status">
                                 <div className="open-status"/>
                                 <h5 className="open">Open</h5>
                             </div>}
-                            {moment().format() >= props.wager.closes_at && 
+                            {status === "Closed" && 
                             <div className="sb_wager__status">
                                 <div className="closed-status"/>
                                 <h5 className="closed">Closed</h5>
+                            </div>}
+                            {status === "Pending Review" && 
+                            <div className="sb_wager__status">
+                                <div className="pending-status"/>
+                                <h5 className="pending">Pending Review</h5>
+                            </div>}
+                            {status === "Complete" && 
+                            <div className="sb_wager__status">
+                                <div className="complete-status"/>
+                                <h5 className="complete">Complete</h5>
                             </div>}
                         </div>
                     </>

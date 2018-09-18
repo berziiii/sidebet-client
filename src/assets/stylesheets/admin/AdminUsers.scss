@@ -7,6 +7,9 @@
 }
 .sb_admin-users__users-table {
   width: 100%;
+  margin: 50px auto 0;
+  max-width: 1200px;
+  min-width: 767px;
 }
 
 .sb_admin-users__check-circle {
@@ -42,11 +45,9 @@
 }
 
 .sb_admin-users__main-container {
-  margin: 50px auto 0;
-  max-width: 1200px;
-  min-width: 767px;
   overflow-x: scroll;
   width: 100%;
+  background: $white;
 }
 
 .sb_admin-users__header{
@@ -59,7 +60,7 @@
   max-height: calc(100vh - 120px);
   margin: 0 auto;
   display: flex;
-  margin: 25px;
+  margin: 20px;
   border-radius: 5px;
 }
 

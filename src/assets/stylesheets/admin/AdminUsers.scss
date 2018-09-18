@@ -66,6 +66,7 @@
 .sb_admin-user__personal-info-container {
   width: 600px;
   background: $white;
+  overflow-y: scroll;
   min-height: 100%;
   text-align: left;
   padding: 0 5px;

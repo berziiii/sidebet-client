@@ -2,7 +2,7 @@
   "name": "sidebet-client",
   "version": "0.1.0-alpha1.0",
   "private": true,
-  "homepage": "http://localhost:3001",
+  "homepage": "https://sidebet-client.herokuapp.com/",
   "author": {
     "name": "Brian Berzellini"
   },

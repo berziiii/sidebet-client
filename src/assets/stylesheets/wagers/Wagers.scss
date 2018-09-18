@@ -140,6 +140,31 @@
   font-size: .8em;
 }
 
+.sb_wagers-list__search-input-container {
+  height: 50px;
+  width: 80%;
+  margin: 0 auto;
+  font-size: 2em;
+  border-left: .5px solid $dark-blue;
+  border-bottom: .5px solid $dark-blue;
+  i {
+    color: $dark-blue;
+  }
+  input {
+    border: none!important;
+    background: transparent!important;
+    font-size: 1em;
+    padding-left: 60px!important;
+    outline: none;
+    &:focus {
+      border-color: inherit;
+      box-shadow: none;
+      border: none!important;
+      background: transparent!important;
+    }
+  }
+}
+
 @media(max-width: 900px) {
   .sb_app__wagers-list-container {
     display: block;

@@ -127,7 +127,7 @@
   width: 100%;
 }
 
-.open-status, .complete-status {
+.open-status, .settled-status {
   width: 10px;
   height: 10px;
   border-radius: 10px;
@@ -135,11 +135,11 @@
   display: inline-block;
 }
 
-.closed-status {
+.in-progress-status {
   width: 10px;
   height: 10px;
   border-radius: 10px;
-  background: $red;
+  background: $dark-blue;
   display: inline-block;
 }
 
@@ -151,7 +151,7 @@
   display: inline-block;
 }
 
-.open, .complete {
+.open, .settled {
   color: $green;
   font-size: 1em;
   font-weight: 900;
@@ -159,8 +159,8 @@
   display: inline-block;
 }
 
-.closed {
-  color: $red;
+.in-progress {
+  color: $dark-blue;
   font-size: 1em;
   padding-left: 8px;
   font-weight: 900;

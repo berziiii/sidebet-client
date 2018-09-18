@@ -34,20 +34,20 @@ export class WagerCard extends BaseComponent<WagerCardProps, WagerCardState> {
                                 <div className="open-status"/>
                                 <h5 className="open">Open</h5>
                             </div>}
-                            {status === "Closed" && 
+                            {status === "In Progress" && 
                             <div className="sb_wager__status">
-                                <div className="closed-status"/>
-                                <h5 className="closed">Closed</h5>
+                                <div className="in-progress-status"/>
+                                <h5 className="in-progress">In Progress</h5>
                             </div>}
                             {status === "Pending Review" && 
                             <div className="sb_wager__status">
                                 <div className="pending-status"/>
                                 <h5 className="pending">Pending Review</h5>
                             </div>}
-                            {status === "Complete" && 
+                            {status === "Settled" && 
                             <div className="sb_wager__status">
-                                <div className="complete-status"/>
-                                <h5 className="complete">Complete</h5>
+                                <div className="settled-status"/>
+                                <h5 className="settled">Settled</h5>
                             </div>}
                         </div>
                     </>

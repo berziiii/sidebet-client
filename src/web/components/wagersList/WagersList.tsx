@@ -35,6 +35,7 @@ export class WagersList extends BaseComponent<WagersListProps, WagersListState> 
             closes_at: "",
             expires_at: "",
             options: {},
+            search: "",
         };
         this.getWagers = this.getWagers.bind(this);
         this.handleAddWager = this.handleAddWager.bind(this);
@@ -48,6 +49,7 @@ export class WagersList extends BaseComponent<WagersListProps, WagersListState> 
         this.createWager = this.createWager.bind(this);
         this.createWagerOptions = this.createWagerOptions.bind(this);
         this.handleWagerTypeChange = this.handleWagerTypeChange.bind(this);
+        this.handleSearchChange = this.handleSearchChange.bind(this);
     }
 
     componentDidMount() {
@@ -222,6 +224,13 @@ export class WagersList extends BaseComponent<WagersListProps, WagersListState> 
         });
     }
 
+    handleSearchChange(e: any) {
+        const value = e.target.value;
+        this.setState({
+            search: value,
+        });
+    }
+
     render() {
         const MonetaryPrize = this.state.wager_prize_type === "Monetary";
         let wagersList: any = [];
@@ -391,6 +400,13 @@ export class WagersList extends BaseComponent<WagersListProps, WagersListState> 
         const content = (
             <div className="sb_app__component-container sb_wagers__component-container">
                 <div className="sb_app__wagers-list-container">
+                    {/* <Input 
+                    className="sb_wagers-list__search-input-container"
+                    prefix={<Icon type="search" />}
+                    type="text"
+                    placeholder="Search Wagers"
+                    onChange={this.handleSearchChange}
+                    /> */}
                     {_.isArray(this.state.wagers) && 
                         wagersList}
                     {!_.isArray(this.state.wagers) &&

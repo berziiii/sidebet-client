@@ -16,4 +16,5 @@ export interface WagersListState {
     closes_at?: string | undefined;
     expires_at?: string | undefined;
     options?: any | undefined;
+    search?: any | undefined;
 }

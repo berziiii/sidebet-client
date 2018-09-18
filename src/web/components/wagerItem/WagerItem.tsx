@@ -91,20 +91,6 @@ export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
         });
     }
 
-    // checkWagerStatus(wager: any) {
-    //     let wagerStatus = "Open";
-    //     const currentTime = moment().format();
-    //     if (wagerStatus !== "Complete") {
-    //         if (currentTime >= wager.expires_at && wager.wager_status !== "Pending Review")
-    //             wagerStatus = "Pending Review";
-    //         else if (currentTime >= wager.closes_at && wager.wager_status !== "Closed")
-    //             wagerStatus = "Closed";
-    //         else if (currentTime < wager.closes_at) {
-    //             wagerStatus = "Closed";
-    //         }
-    //     }
-    // }
-
     setWagerState(wager: any) {
         const {appStore} = this;
         let userBet = undefined;
@@ -415,7 +401,7 @@ export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
             const wagerData = {
                 wager_id: this.state.proposedWinner.wager_id,
                 winning_option: this.state.proposedWinner.option_id,
-                wager_status: "Complete",
+                wager_status: "Settled",
             };
             this.appStore.dataStore.updateWager(wagerData)
             .then((updatedWager: any) => {
@@ -458,20 +444,20 @@ export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
                             <div className="open-status"/>
                             <h5 className="open">Open</h5>
                         </div>}
-                        {this.state.wager_status === "Closed" &&
+                        {this.state.wager_status === "In Progress" &&
                         <div className="sb_wager__status">
-                            <div className="closed-status"/>
-                            <h5 className="closed">Closed</h5>
+                            <div className="in-progress-status"/>
+                            <h5 className="in-progress">In Progress</h5>
                         </div>}
                         {this.state.wager_status === "Pending Review" &&
                         <div className="sb_wager__status">
                             <div className="pending-status"/>
                             <h5 className="pending">Pending Review</h5>
                         </div>}
-                        {this.state.wager_status === "Complete" &&
+                        {this.state.wager_status === "Settled" &&
                         <div className="sb_wager__status">
-                            <div className="complete-status"/>
-                            <h5 className="complete">Complete</h5>
+                            <div className="settled-status"/>
+                            <h5 className="settled">Settled</h5>
                         </div>}
                     </>
                 }
@@ -520,13 +506,14 @@ export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
                     hasBets = true;
             });
             const userBetOption = state.userBet === option.option_id;
+            const winningOption = (!_.isNil(state.winning_option) && state.winning_option === option.option_id);
             return (
                 <>
                     {appStore.state.mode === AppMode.Desktop && 
                         <div key={`optionWrapper${i}`} className="sb_wager__option-wrapper" style={{width: `${optionWidth}%`}}>                            
                             {userBetOption && wagerOpen &&
                             <Button 
-                                className={`sb_wager__option-button sb_wager__user-selected-option ${(!_.isNil(this.state.winning_option) && this.state.winning_option === option.option_id) ? "sb_wager__winning-option" : "sb_wager__non-winning-option" }`}
+                                className={`sb_wager__option-button sb_wager__user-selected-option ${(!_.isNil(state.winning_option) && winningOption) ? "sb_wager__winning-option" : ""} ${(!_.isNil(state.winning_option) && !winningOption) ? "sb_wager__non-winning-option" : "" }`}
                                 onClick={() => this.handleBet(option)}>
                                 {option.option_text}
                             </Button>}
@@ -534,14 +521,14 @@ export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
                             {userBetOption && !wagerOpen &&
                             <Button 
                                 disabled
-                                className={`sb_wager__option-button sb_wager__user-selected-option ${(!_.isNil(this.state.winning_option) && this.state.winning_option === option.option_id) ? "sb_wager__winning-option" : "sb_wager__non-winning-option" }`}
+                                className={`sb_wager__option-button sb_wager__user-selected-option ${(!_.isNil(state.winning_option) && winningOption) ? "sb_wager__winning-option" : ""} ${(!_.isNil(state.winning_option) && !winningOption) ? "sb_wager__non-winning-option" : "" }`}
                                 onClick={() => this.handleBet(option)}>
                                 {option.option_text}
                             </Button>}
 
                             {!userBetOption && wagerOpen &&
                             <Button 
-                                className={`sb_wager__option-button ${(!_.isNil(this.state.winning_option) && this.state.winning_option === option.option_id) ? "sb_wager__winning-option" : "sb_wager__non-winning-option" }`}
+                                className={`sb_wager__option-button ${(!_.isNil(state.winning_option) && winningOption) ? "sb_wager__winning-option" : ""} ${(!_.isNil(state.winning_option) && !winningOption) ? "sb_wager__non-winning-option" : "" }`}
                                 onClick={() => this.handleBet(option)}>
                                 {option.option_text}
                             </Button>}
@@ -549,7 +536,7 @@ export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
                             {!userBetOption && !wagerOpen &&
                             <Button 
                                 disabled
-                                className={`sb_wager__option-button ${(!_.isNil(this.state.winning_option) && this.state.winning_option === option.option_id) ? "sb_wager__winning-option" : "sb_wager__non-winning-option" }`}
+                                className={`sb_wager__option-button ${(!_.isNil(state.winning_option) && winningOption) ? "sb_wager__winning-option" : ""} ${(!_.isNil(state.winning_option) && !winningOption) ? "sb_wager__non-winning-option" : "" }`}
                                 onClick={() => this.handleBet(option)}>
                                 {option.option_text}
                             </Button>}

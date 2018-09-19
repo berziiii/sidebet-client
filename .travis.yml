@@ -7,8 +7,8 @@ branches:
   - master
   - develop
 script:
-  - if [ $TRAVIS_BRANCH = 'develop' ]; "BUNDLE_TYPE=app DATABASE_HOST=https://sandbox-sidebet-api.herokuapp.com node scripts/build.js" fi
-  - if [ $TRAVIS_BRANCH = 'master' ]; "BUNDLE_TYPE=app DATABASE_HOST=https://sidebet-api.herokuapp.com node scripts/build.js" fi
+  - $TRAVIS_BRANCH == "develop" && BUNDLE_TYPE=app DATABASE_HOST=${HEROKU_SANDBOX_URL} node scripts/build.js
+  - $TRAVIS_BRANCH == "master" && BUNDLE_TYPE=app DATABASE_HOST=${HEROKU_PRODUCTION_URL} node scripts/build.js
 before_deploy:
   - "cp -rf build/ deploy && cp static.json deploy/ && cd deploy/ && git add . && git commit -m 'deploy'"
 deploy:

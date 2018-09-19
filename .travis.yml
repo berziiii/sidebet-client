@@ -7,7 +7,8 @@ branches:
   - master
   - develop
 script:
-  - npm run build
+  - if [ $TRAVIS_BRANCH = 'develop' ]; "BUNDLE_TYPE=app DATABASE_HOST=https://sandbox-sidebet-api.herokuapp.com node scripts/build.js" fi
+  - if [ $TRAVIS_BRANCH = 'master' ]; "BUNDLE_TYPE=app DATABASE_HOST=https://sidebet-api.herokuapp.com node scripts/build.js" fi
 before_deploy:
   - "cp -rf build/ deploy && cp static.json deploy/ && cd deploy/ && git add . && git commit -m 'deploy'"
 deploy:

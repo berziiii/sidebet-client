@@ -1,0 +1,19 @@
+language: node_js
+sudo: false
+node_js:
+- 10.9.0
+branches:
+  only:
+  - master
+  - develop
+script:
+  - npm run build
+before_deploy:
+  - "cp -rf build/ deploy && cp static.json deploy/ && git add . && git commit -m 'deploy'"
+deploy:
+  provider: heroku
+  api_key:
+    secure: ${HEROKU_API_KEY}
+  app:
+    master: "sidebet-client"
+    develop: "sandbox-sidebet-client"

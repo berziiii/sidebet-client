@@ -9,7 +9,7 @@ branches:
 script:
   - npm run build
 before_deploy:
-  - "cp -rf build/ deploy && cp static.json deploy/ && git add . && git commit -m 'deploy'"
+  - "cp -rf build/ deploy && cp static.json deploy/ && cd deploy/ && git add . && git commit -m 'deploy'"
 deploy:
   provider: heroku
   api_key:

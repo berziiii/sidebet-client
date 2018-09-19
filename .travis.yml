@@ -7,10 +7,10 @@ branches:
   - master
   - develop
 script:
-  - if [ $TRAVIS_BRANCH == "develop" ]; then 
-      BUNDLE_TYPE=app DATABASE_HOST=${HEROKU_SANDBOX_URL} node scripts/build.js;
-    else
-      BUNDLE_TYPE=app DATABASE_HOST=${HEROKU_PRODUCTION_URL} node scripts/build.js; 
+  - if [ "\$TRAVIS_BRANCH" == "develop" ]; then 
+      "BUNDLE_TYPE=app DATABASE_HOST=\${HEROKU_SANDBOX_URL} node scripts/build.js";
+    else 
+      "BUNDLE_TYPE=app DATABASE_HOST=\${HEROKU_PRODUCTION_URL} node scripts/build.js"; 
     fi
 before_deploy:
   - cp -rf build/ deploy && cp static.json deploy/ && cd deploy/ && git add . && git commit -m 'deploy'

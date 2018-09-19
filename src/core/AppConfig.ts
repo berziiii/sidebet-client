@@ -1,7 +1,7 @@
 export const AppConfig = {
     Settings: {
         Server: {
-            baseUrl: `${process.env.NODE_ENV === "development" ? "http://localhost:3000" : "https://sidebet-api.herokuapp.com"}`,
+            baseUrl: process.env.DATABASE_HOST,
             timeout: 30000,
             context: "SideBet",
         }

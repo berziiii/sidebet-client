@@ -81,6 +81,7 @@ function getClientEnvironment(publicUrl) {
         BUNDLE_TYPE: process.env.BUNDLE_TYPE || 'library',
         BUNDLE_NAME: process.env.BUNDLE_NAME || appPackage.name,
         BUNDLE_VERSION: process.env.BUNDLE_VERSION || appPackage.version,
+        DATABASE_HOST: process.env.DATABASE_HOST,
 
         PACKAGE_NAME: appPackage.name,
         PACKAGE_VERSION: appPackage.version,

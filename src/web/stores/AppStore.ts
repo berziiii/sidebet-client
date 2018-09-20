@@ -143,7 +143,7 @@ export class AppStore {
         const keys = Object.keys(wagerData);
         let validDataset = true;
         _.each(keys, (key: any) => {
-            if (wagerData[key] === "" || wagerData[key] === undefined) {
+            if (key !== "special_instruction" && wagerData[key] === "" || wagerData[key] === undefined) {
                 validDataset = false;
             }
         });

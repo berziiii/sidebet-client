@@ -7,7 +7,8 @@ import { Button,
         Form, 
         Input, 
         Select, 
-        DatePicker } from "antd";
+        DatePicker,
+        Collapse } from "antd";
 import {BaseComponent} from "../BaseComponent";
 import * as ComponentFactory from "../ComponentFactory";
 import {WagersListProps, WagersListState} from "./WagersListInterface";
@@ -16,6 +17,7 @@ import TextArea from "antd/lib/input/TextArea";
 
 const FormItem = Form.Item;
 const Option = Select.Option;
+const Panel = Collapse.Panel;
 let uuid = 1;
 let keys: any = [];
 
@@ -27,6 +29,7 @@ export class WagersList extends BaseComponent<WagersListProps, WagersListState> 
             wagers: undefined,
             wager_title: "",
             wager_description: "",
+            special_instruction: "",
             share_type: "Public",
             wager_prize: "",
             wager_prize_type: "Monetary",
@@ -169,6 +172,7 @@ export class WagersList extends BaseComponent<WagersListProps, WagersListState> 
             share_type: this.state.share_type,
             wager_prize_type: this.state.wager_prize_type,
             wager_type: this.state.wager_type,
+            special_instruction: this.state.special_instruction,
             closes_at: this.state.closes_at,
             expires_at: this.state.expires_at,
         };
@@ -290,6 +294,20 @@ export class WagersList extends BaseComponent<WagersListProps, WagersListState> 
                             name="wager_description"
                             onChange={this.handleTextInputChange}
                             className="sb_wagers__add-wager-input"/>
+                    </FormItem>
+
+                    <FormItem>
+                        <Collapse className="sb_wagers__wager-special-instructions">
+                            <Panel 
+                            header="Special Wager Details" 
+                            key="1">
+                                <TextArea 
+                                value={this.state.special_instruction} 
+                                name="special_instruction"
+                                onChange={this.handleTextInputChange}
+                                className="sb_wagers__add-wager-input"/>
+                            </Panel>
+                        </Collapse>
                     </FormItem>
 
                     <FormItem>

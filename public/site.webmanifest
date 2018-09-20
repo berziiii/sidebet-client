@@ -1,6 +1,6 @@
 {
-    "name": "Mimi's Cafe",
-    "short_name": "Mimi's Cafe",
+    "name": "SideBet",
+    "short_name": "SideBet",
     "icons": [
       {
         "src": "./android-chrome-192x192.png",
@@ -13,8 +13,8 @@
         "type": "image/png"
       }
     ],
-    "theme_color": "#ffffff",
-    "background_color": "#960F20",
+    "theme_color": "#001529",
+    "background_color": "#001529",
     "display": "standalone"
   }
   

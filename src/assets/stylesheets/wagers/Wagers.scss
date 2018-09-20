@@ -164,6 +164,10 @@
     }
   }
 }
+.sb_wagers__wager-special-instructions {
+  background: $white!important;
+  border: .5px solid #d9d9d9!important;
+}
 
 @media(max-width: 900px) {
   .sb_app__wagers-list-container {

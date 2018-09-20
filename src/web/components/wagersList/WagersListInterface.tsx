@@ -8,6 +8,7 @@ export interface WagersListState {
     visibleDrawer?: boolean;
     wager_title?: string | undefined;
     wager_description?: string | undefined;
+    special_instruction?: string | undefined;
     share_type?: string | undefined;
     wager_prize?: string | undefined;
     wager_prize_type?: string | undefined;

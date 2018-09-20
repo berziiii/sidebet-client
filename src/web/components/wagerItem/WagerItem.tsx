@@ -29,6 +29,7 @@ export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
             wager_title: undefined,
             bets: [],
             wager_description: undefined,
+            special_instruction: undefined,
             share_type: undefined,
             wager_prize: undefined,
             wager_prize_type: undefined,
@@ -109,6 +110,7 @@ export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
             wager_title: wager.wager_title,
             bets: wager.bets,
             wager_description: wager.wager_description,
+            special_instruction: wager.special_instruction,
             share_type: wager.share_type,
             wager_prize: wager.wager_prize,
             wager_prize_type: wager.wager_prize_type,
@@ -135,6 +137,7 @@ export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
             wager_title: wager.wager_title,
             bets: wager.bets,
             wager_description: wager.wager_description,
+            special_instruction: wager.special_instruction,
             share_type: wager.share_type,
             wager_prize: wager.wager_prize,
             wager_prize_type: wager.wager_prize_type,
@@ -259,6 +262,7 @@ export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
             wager_id: state.wager_id,
             wager_title: state.wager_title,
             wager_description: state.wager_description,
+            special_instruction: state.special_instruction,
             share_type: state.share_type,
             wager_prize_type: state.wager_prize_type,
             wager_type: state.wager_type,
@@ -635,6 +639,20 @@ export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
                     </FormItem>
 
                     <FormItem>
+                        <Collapse defaultActiveKey={state.special_instruction !== "" ? ["1"] : []}className="sb_wagers__wager-special-instructions">
+                            <Panel 
+                            header="Special Wager Details" 
+                            key="1">
+                                <TextArea 
+                                value={state.special_instruction} 
+                                name="special_instruction"
+                                onChange={this.handleTextInputChange}
+                                className="sb_wagers__add-wager-input"/>
+                            </Panel>
+                        </Collapse>
+                    </FormItem>
+
+                    <FormItem>
                         <h5 className="sb_wagers__add-wager-input-label">Wager Type:</h5>
                         <Select 
                             defaultValue={state.wager_type} 
@@ -926,6 +944,10 @@ export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
                         sideContent}
                         <div className="sb_wager__wager-details">
                             <p className="sb_wager__wager-description">{state.wager_description}</p> 
+
+                            {!_.isNil(state.special_instruction) &&
+                            <p className="sb_wager__wager-special-details"><h6>Special Wager Details</h6>{state.special_instruction}</p>}
+
                             <h2 className="sb_wager__options-header"> Place a Bet! </h2>  
                             <div className="sb_wager__wager-options-container">
                                 {wagerOptions}

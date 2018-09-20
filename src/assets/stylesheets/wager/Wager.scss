@@ -85,7 +85,24 @@
   text-align: center;
   text-transform: capitalize;
   margin: 0 !important;
-  border-bottom: 1px solid #f0f2f5;
+  border-bottom: 1px solid $grey;
+}
+
+.sb_wager__wager-special-details {
+  color: $dark-blue;
+  padding: 10px 25px 20px;
+  font-size: .8em;
+  font-weight: 400;
+  text-align: center;
+  text-transform: capitalize;
+  margin: 0 !important;
+  border-bottom: 1px solid $grey;
+  h6 {
+    font-size: 1em!important;
+    text-decoration: underline; 
+    font-weight: 900;
+    padding-bottom: 10px;
+  }
 }
 
 .sb_wager__wager-options-container {

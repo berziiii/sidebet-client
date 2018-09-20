@@ -73,6 +73,20 @@ export class APIClient {
         });
     }
 
+    static checkIfUserExists(userData: Models.SignUp) {
+        return new Promise((resolve, reject) => {
+            const {client, config} = this.createClient();
+            return client.post(`/api/users/registration`, userData, config)
+            .then((userExists: AxiosResponse) => {
+                resolve(userExists);
+            })
+            .catch((err) => {
+                console.error(err);
+                reject(err.response.data);
+            });
+        });
+    }
+
     static signUpUser(userData: Models.SignUp) {
         return new Promise((resolve, reject) => {
             const {client, config} = this.createClient();

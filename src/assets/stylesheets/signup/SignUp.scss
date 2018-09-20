@@ -25,6 +25,15 @@
   font-weight: lighter;
   text-align: left;
 }
+.sb_sign-up__add-profile-modal {
+  width: 50% !important;
+  height: auto;
+  text-align: center;
+  
+  .ant-modal-close {
+    display: none;
+  }
+}
 
 @media (max-width: 767px) {
   .sb_signup__form-container {

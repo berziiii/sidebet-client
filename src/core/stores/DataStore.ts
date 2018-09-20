@@ -127,6 +127,20 @@ export class DataStore implements Models.Store {
     }
 
     @action
+    checkIfUserExists(userCredentials: Models.SignUp) {
+        return new Promise((resolve, reject) => {
+            APIClient.checkIfUserExists(userCredentials)
+            .then((userExists: Models.User) => {
+                const exists = this.processResponse(userExists);
+                resolve(exists);
+            })
+            .catch((err) => {
+                reject(err);
+            });
+        });
+    }
+
+    @action
     updateNewUser(profileInfo: Models.NewProfile) {
         return new Promise((resolve, reject) => {
             APIClient.newProfile(profileInfo)

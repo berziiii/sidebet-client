@@ -26,7 +26,8 @@ export class SignUpForm extends BaseComponent<SignUpProps, SignUpState> {
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleUpdateProfile = this.handleUpdateProfile.bind(this);
         this.validateEmailAndPassword = this.validateEmailAndPassword.bind(this);
-        this.validateUsername = this.validateUsername.bind(this);
+        this.validateNoSpaces = this.validateNoSpaces.bind(this);
+        this.validatePhone = this.validatePhone.bind(this);
     }
     handleChange = (e: any) => {
         const target = e.target;
@@ -55,12 +56,19 @@ export class SignUpForm extends BaseComponent<SignUpProps, SignUpState> {
         }
     }
 
-    validateUsername(username: any) {
-        const containsSpaces = /\s/g.test(username);
+    validateNoSpaces(profileInfo: any) {
+        const containsSpaces = /\s/g.test(profileInfo);
         if (containsSpaces)
             return false;
         return true;
     }
+
+    validatePhone(phone: any) {
+        const validPhone = /^\d{3}-\d{3}-\d{4}$/g.test(phone);
+        if (!validPhone)
+            this.appStore.showMessage("error", "Not a valid Phone Number");
+        return validPhone;
+    } 
 
     validateEmailAndPassword(email: string | undefined, password: string | undefined) {
         const validEmail = this.appStore.validateEmail(email);
@@ -84,12 +92,13 @@ export class SignUpForm extends BaseComponent<SignUpProps, SignUpState> {
             password: this.state.password
         };
         if (this.validateEmailAndPassword(user.email, user.password)) {
-            appStore.dataStore.createUser(user)
-            .then((userObj: any) => {
-                if (!_.isNil(userObj)) {
-                    this.appStore.dataStore.authorizedUser = userObj;
+            appStore.dataStore.checkIfUserExists(user)
+            .then((userExists?: any) => {
+                if (!userExists) {
                     this.setState({successfulSignup: true});
-                    this.appStore.showMessage("success", "Account Successfully Created.");
+                    this.appStore.showMessage("success", "Email Address Available!");
+                } else {
+                    this.appStore.showMessage("error", "Email already exists. Please choose another or Sign In.");
                 }
             })
             .catch((err: any) => {
@@ -102,31 +111,43 @@ export class SignUpForm extends BaseComponent<SignUpProps, SignUpState> {
     handleUpdateProfile = (e: any) => {
         e.preventDefault();
         const {appStore} = this;
-        const user = {
+        const profileInfo = {
+            app_secret_key: this.state.app_secret_key,
+            email: this.state.email,
+            password: this.state.password,
             username: this.state.username,
             first_name: this.state.first_name,
             last_name: this.state.last_name,
             phone: this.state.phone,
-            user_id: this.appStore.dataStore.authorizedUser.user_id
         };
-        const validUsername = this.validateUsername(user.username);
-        if (validUsername) {
-            if (this.appStore.validateProfileData(user))
-                appStore.dataStore.updateNewUser(user)
-                .then((userObj: any) => {
-                    if (!_.isNil(userObj)) {
-                        this.appStore.navigateTo("/");
-                        this.appStore.showMessage("success", "Profile Successfully Created.");
-                    }
-                })
-                .catch((err: any) => {
-                    console.error(err);
-                    this.appStore.showMessage("error", err);
-                });
-            else 
-                this.appStore.showMessage("error", "Please Complete all Profile Fields");
-        } else {
-            this.appStore.showMessage("error", "Username cannot contain spaces.");
+        const validProfileInfo = () => {
+            let validObj = true;
+            Object.keys(profileInfo).forEach((key) => {
+                if (!this.validateNoSpaces(profileInfo[key]))
+                    validObj = false;
+            });
+            return validObj;
+        };
+        if (this.validatePhone(profileInfo.phone)) {
+            if (validProfileInfo()) {
+                if (this.appStore.validateProfileData(profileInfo))
+
+                    appStore.dataStore.createUser(profileInfo)
+                    .then((userObj: any) => {
+                        if (!_.isNil(userObj)) {
+                            this.appStore.navigateTo("/");
+                            this.appStore.showMessage("success", "Account Successfully Created.");
+                        }
+                    })
+                    .catch((err: any) => {
+                        console.error(err);
+                        this.appStore.showMessage("error", err);
+                    });
+                else 
+                    this.appStore.showMessage("error", "Please Complete all Profile Fields");
+            } else {
+                this.appStore.showMessage("error", "Information can not have spaces. Please fix your responses.");
+            }
         }
     }
 
@@ -178,7 +199,7 @@ export class SignUpForm extends BaseComponent<SignUpProps, SignUpState> {
                                 type="primary" 
                                 htmlType="submit" 
                                 className="sb_signup__submit-button">
-                                Sign Up
+                                Submit
                             </Button>
                         </FormItem>
                     </Form>
@@ -186,78 +207,77 @@ export class SignUpForm extends BaseComponent<SignUpProps, SignUpState> {
             </div>
         );
         const updateUserProfile = (
-            <div className="sb_app__component-container sb_signup-profile__component-container">
-                <div className="sb_signup__form-container">
-                    <Form onSubmit={this.handleUpdateProfile} name="update" className="login-form">
-                        {this.state.validUsername &&
-                        <FormItem 
-                        {...formItemLayout}
-                        label="Username: "
-                        className="sb_signup__input">
-                        <Input 
-                                onChange={this.handleChange} 
-                                value={this.state.username} 
-                                name="username" 
-                                autoFocus
-                                placeholder="Username" />
-                        </FormItem>}
-                        {!this.state.validUsername &&
-                        <FormItem 
+                <div className="sb_app__component-container sb_signup-profile__component-container">
+                    <div className="sb_signup__form-container">
+                        <Form onSubmit={this.handleUpdateProfile} name="update" className="login-form">
+                            {this.state.validUsername &&
+                            <FormItem 
                             {...formItemLayout}
                             label="Username: "
-                            validateStatus="error"
-                            help="Username Already Taken"
                             className="sb_signup__input">
                             <Input 
-
                                     onChange={this.handleChange} 
                                     value={this.state.username} 
                                     name="username" 
                                     autoFocus
                                     placeholder="Username" />
-                        </FormItem>}
-                        <FormItem 
-                            {...formItemLayout}
-                            label="First Name: "
-                            className="sb_signup__input">
-                            <Input  
-                                onChange={this.handleChange} 
-                                value={this.state.first_name} 
-                                name="first_name" 
-                                placeholder="First Name" />
-                        </FormItem>
-                        <FormItem 
-                            {...formItemLayout}
-                            label="Last Name: "
-                            className="sb_signup__input">
-                            <Input  
-                                onChange={this.handleChange} 
-                                value={this.state.last_name} 
-                                name="last_name" 
-                                placeholder="Last Name" />
-                        </FormItem>
-                        <FormItem 
-                            {...formItemLayout}
-                            label="Phone Number: "
-                            className="sb_signup__input">
-                            <Input  
-                                onChange={this.handleChange} 
-                                value={this.state.phone} 
-                                name="phone" 
-                                type="phone" 
-                                placeholder="Phone Number" />
-                        </FormItem>
-                        <FormItem>
-                            <Button 
-                                type="primary" 
-                                htmlType="submit" 
-                                className="sb_signup__submit-button">
-                               Save Profile
-                            </Button>
-                        </FormItem>
-                    </Form>
+                            </FormItem>}
+                            {!this.state.validUsername &&
+                            <FormItem 
+                                {...formItemLayout}
+                                label="Username: "
+                                validateStatus="error"
+                                help="Username Already Taken"
+                                className="sb_signup__input">
+                                <Input 
+                                    onChange={this.handleChange} 
+                                    value={this.state.username} 
+                                    name="username" 
+                                    autoFocus
+                                    placeholder="Username" />
+                            </FormItem>}
+                            <FormItem 
+                                {...formItemLayout}
+                                label="First Name: "
+                                className="sb_signup__input">
+                                <Input  
+                                    onChange={this.handleChange} 
+                                    value={this.state.first_name} 
+                                    name="first_name" 
+                                    placeholder="First Name" />
+                            </FormItem>
+                            <FormItem 
+                                {...formItemLayout}
+                                label="Last Name: "
+                                className="sb_signup__input">
+                                <Input  
+                                    onChange={this.handleChange} 
+                                    value={this.state.last_name} 
+                                    name="last_name" 
+                                    placeholder="Last Name" />
+                            </FormItem>
+                            <FormItem 
+                                {...formItemLayout}
+                                label="Phone Number: "
+                                className="sb_signup__input">
+                                <Input  
+                                    onChange={this.handleChange} 
+                                    value={this.state.phone} 
+                                    name="phone" 
+                                    type="phone" 
+                                    placeholder="Phone Number" />
+                            </FormItem>
+                            <FormItem>
+                                <Button 
+                                    type="primary" 
+                                    htmlType="submit" 
+                                    className="sb_signup__submit-button">
+                                    Create Account
+                                </Button>
+                            </FormItem>
+                        </Form>
                     </div>
-            </div>
+                </div>
         );
         return(
             <Observer>

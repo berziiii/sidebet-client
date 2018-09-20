@@ -36,6 +36,9 @@ export class SignInForm extends BaseComponent<SignInProps, SignInState> {
             if (!_.isNil(userObj)) {
                 this.appStore.navigateTo("/");
                 this.appStore.showMessage("success", "Successfully Logged In.");
+            } else {
+                const error = userObj || "Something went wrong. Unable to Sign In.";
+                this.appStore.showMessage("error", error);
             }
         })
         .catch((err: any) => {

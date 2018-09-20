@@ -7,7 +7,10 @@
 .ant-menu-item {
   padding-left: 10px!important;
   text-align: left;
-  margin: 0 auto
+  margin: 0 auto;
+  &:hover, &:visited, &:active {
+    color: initial;
+  }
 }
 
 .ant-layout-header {
@@ -24,10 +27,7 @@
 }
 
 .ant-collapse.sb_wager__details-collaspe {
-  // position: sticky;
-  // top: 115px;
   width: 100%;
-  // z-index: 10;
 }
 
 .ant-collapse-content > .ant-collapse-content-box {

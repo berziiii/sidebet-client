@@ -29,13 +29,22 @@ export class ProfileForm extends BaseComponent<ProfileProps, ProfileState> {
         this.handleRemoveAccount = this.handleRemoveAccount.bind(this);
         this.handleRemoveAccountCancel = this.handleRemoveAccountCancel.bind(this);
         this.handleRemoveAccountSubmit = this.handleRemoveAccountSubmit.bind(this);
+        this.validateNoSpaces = this.validateNoSpaces.bind(this);
+        this.validatePhone = this.validatePhone.bind(this);
     }
 
     handleChange = (e: any) => {
         const target = e.target;
-        const value = target.value;
+        let value = target.value;
         const name = target.name;
-
+        if (name === "phone") {
+            if (value.match(/(\d{3})/))
+                value = value.replace(/(\d{3})\-?/, "$1-");
+            if (value.match(/(\d{3})\-?(\d{3})/))
+                value = value.replace(/(\d{3})\-?(\d{3})\-?/, "$1-$2-");
+            if (value.match(/(\d{3})\-?(\d{3})\-?(\d{4})/))
+                value = value.replace(/(\d{3})\-?(\d{3})\-?(\d{4})/, "$1-$2-$3");
+        }
         this.setState({
             [name]: value
         });
@@ -59,6 +68,20 @@ export class ProfileForm extends BaseComponent<ProfileProps, ProfileState> {
         }
     }
 
+    validateNoSpaces(profileInfo: any) {
+        const containsSpaces = /\s/g.test(profileInfo);
+        if (containsSpaces)
+            return false;
+        return true;
+    }
+
+    validatePhone(phone: any) {
+        const validPhone = /^\d{3}-\d{3}-\d{4}$/g.test(phone);
+        if (!validPhone)
+            this.appStore.showMessage("error", "Not a valid Phone Number");
+        return validPhone;
+    } 
+
     handleProfileSubmit = (e: any) => {
         e.preventDefault();
         const {appStore} = this;
@@ -70,18 +93,33 @@ export class ProfileForm extends BaseComponent<ProfileProps, ProfileState> {
             phone: this.state.phone,
             user_id: this.appStore.dataStore.authorizedUser.user_id
         };
-        if (this.state.validUsername)
-            if (this.appStore.validateProfileData(userProfile))
-                appStore.dataStore.updateUserProfile(userProfile)
-                .then(() => {
-                    this.appStore.showMessage("success", "Successfully Updated Profile.");
-                })
-                .catch((err: any) => {
-                    console.error(err);
-                    this.appStore.showMessage("error", err);
-                });
-            else 
-                this.appStore.showMessage("error", "Please complete all fields.");
+        const validateProfileData = (profileData: any) => {
+            let validObj = true;
+            Object.keys(profileData).forEach((key: any) => {
+                if (!this.validateNoSpaces(profileData[key]))
+                    validObj = false;
+            });
+            return validObj;
+        };
+        if (this.validatePhone(userProfile.phone)) {
+            if (validateProfileData(userProfile)) {
+                if (this.state.validUsername) {
+                    if (this.appStore.validateProfileData(userProfile))
+                        appStore.dataStore.updateUserProfile(userProfile)
+                        .then(() => {
+                            this.appStore.showMessage("success", "Successfully Updated Profile.");
+                        })
+                        .catch((err: any) => {
+                            console.error(err);
+                            this.appStore.showMessage("error", err);
+                        });
+                    else 
+                        this.appStore.showMessage("error", "Please complete all fields.");
+                }
+            } else {
+                this.appStore.showMessage("error", "Information can not have spaces. Please fix your responses.");
+            }
+        }
     }
 
     validatePassword(password: string | undefined) {

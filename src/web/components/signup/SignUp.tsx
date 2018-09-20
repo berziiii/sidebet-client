@@ -31,9 +31,16 @@ export class SignUpForm extends BaseComponent<SignUpProps, SignUpState> {
     }
     handleChange = (e: any) => {
         const target = e.target;
-        const value = target.value;
+        let value = target.value;
         const name = target.name;
-    
+        if (name === "phone") {
+            if (value.match(/(\d{3})/))
+                value = value.replace(/(\d{3})\-?/, "$1-");
+            if (value.match(/(\d{3})\-?(\d{3})/))
+                value = value.replace(/(\d{3})\-?(\d{3})\-?/, "$1-$2-");
+            if (value.match(/(\d{3})\-?(\d{3})\-?(\d{4})/))
+                value = value.replace(/(\d{3})\-?(\d{3})\-?(\d{4})/, "$1-$2-$3");
+        }
         this.setState({
             [name]: value
         });

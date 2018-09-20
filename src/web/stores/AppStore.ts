@@ -18,7 +18,7 @@ export class AppStore {
     static location: any;
     static initialConfig: any;
 
-    mobileBreakpoint: number = 769; // sm breakpoint
+    mobileBreakpoint: number = 768; // sm breakpoint
 
     dataStore = new DataStore();
 

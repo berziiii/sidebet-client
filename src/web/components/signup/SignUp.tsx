@@ -33,7 +33,7 @@ export class SignUpForm extends BaseComponent<SignUpProps, SignUpState> {
         const target = e.target;
         let value = target.value;
         const name = target.name;
-        if (name === "phone") {
+        if (name === "phone" && value.length >= this.state.phone!.length) {
             if (value.match(/(\d{3})/))
                 value = value.replace(/(\d{3})\-?/, "$1-");
             if (value.match(/(\d{3})\-?(\d{3})/))

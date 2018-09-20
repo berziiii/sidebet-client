@@ -945,7 +945,7 @@ export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
                         <div className="sb_wager__wager-details">
                             <p className="sb_wager__wager-description">{state.wager_description}</p> 
 
-                            {!_.isNil(state.special_instruction) &&
+                            {state.special_instruction !== "" &&
                             <p className="sb_wager__wager-special-details"><h6>Special Wager Details</h6>{state.special_instruction}</p>}
 
                             <h2 className="sb_wager__options-header"> Place a Bet! </h2>  

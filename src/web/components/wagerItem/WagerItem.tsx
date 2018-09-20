@@ -67,7 +67,7 @@ export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
         this.checkHasWinner = this.checkHasWinner.bind(this);
         this.showWinnerModal = this.showWinnerModal.bind(this);
         this.handleWinnerOption = this.handleWinnerOption.bind(this);
-        // this.checkWagerStatus = this.checkWagerStatus.bind(this);
+        this.ownerRemoveBet = this.ownerRemoveBet.bind(this);
     }
 
     componentDidMount() {
@@ -177,6 +177,26 @@ export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
         .catch((err: any) => {
             console.error(err);
             appStore.showMessage("error", "Something went wrong. Unable to remove Bet");
+        });
+    }
+
+    ownerRemoveBet(bet: any) {
+        const { appStore } = this;
+        const betData = {
+            wager_id: bet.wager_id,
+            bet_id: bet.bet_id
+        };
+        appStore.dataStore.ownerDeleteUserBet(betData)
+        .then(() => {
+            return this.getWagerDetails(betData.wager_id);
+        })
+        .then((wager: any) => {
+            this.setWagerState(wager);
+            appStore.showMessage("success", "Successfully Removed Users Bet");
+        })
+        .catch((err: any) => {
+            console.error(err);
+            appStore.showMessage("error", "Something went wrong. Unable to Remove Users Bet");
         });
     }
 
@@ -480,6 +500,13 @@ export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
                     {bet.option_id === option.option_id && 
                     <div key={`optionBet${i}`} className="sb_wager__bets-wrapper">
                         <div key={`betUser${i}`} className="sb_wager__bet-user-avatar">{initial}</div> {name}
+                        {userIsOwner &&                         
+                        <Button 
+                            onClick={() => this.ownerRemoveBet(bet)}
+                            key={`removeBet${i}`} 
+                            className="sb_wager__remove-bet-button">
+                            <Icon type="delete" className="sb_wager__remove-bet"/>
+                        </Button>}
                     </div>}
                 </>
             );

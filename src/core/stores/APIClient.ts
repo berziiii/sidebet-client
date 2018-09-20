@@ -280,6 +280,21 @@ export class APIClient {
         });
     }
 
+    static ownerDeleteUserBet(betData: any) {
+        return new Promise((resolve, reject) => {
+            const {client, config} = this.createClient();
+            const url = `/api/wagers/${betData.wager_id}/bet/${betData.bet_id}/delete`;
+            return client.delete(url, config)
+            .then(() => {
+                resolve();
+            })
+            .catch((err) => {
+                console.error(err);
+                reject(err.response.data);
+            });
+        });
+    }
+
     static updateWager(wagerData: any) {
         return new Promise((resolve, reject) => {
             const {client, config} = this.createClient();

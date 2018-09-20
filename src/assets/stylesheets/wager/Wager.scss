@@ -297,6 +297,19 @@
   opacity: .5!important;
 }
 
+.sb_wager__remove-bet-button {
+  margin-left: 30px;
+  background: transparent;
+  border: none;
+  color: $dark-blue;
+  font-size: 1.4em;
+  &:hover, &:visited, &:active, &:focus {
+    background: transparent;
+    border: none;
+    color: $light-blue;
+  }
+}
+
 @media(max-width: 768px) {
   .sb_wager__wager-content-container {
     display: block;

@@ -15,7 +15,8 @@ const Panel = Collapse.Panel;
 
 let oldState: any = {};
 let keys: any = [];
-
+let uuid = 1;
+let newOptions: any = [];
 export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
     constructor(props: WagerItemProps) {
         super(props);
@@ -23,8 +24,10 @@ export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
             loading: true,
             dirtyData: false,
             modalVisible: false,
+            removeOptionModal: false,
             visibleWinnerModal: false,
             visibleDrawer: false,
+            removeOption: undefined,
             wager_id: undefined,
             wager_title: undefined,
             bets: [],
@@ -43,6 +46,7 @@ export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
             wager_status: undefined,
             winning_option: undefined,
             proposedWinner: undefined,
+            newOptions: undefined,
         };
 
         this.getWagerDetails = this.getWagerDetails.bind(this);
@@ -68,17 +72,20 @@ export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
         this.showWinnerModal = this.showWinnerModal.bind(this);
         this.handleWinnerOption = this.handleWinnerOption.bind(this);
         this.ownerRemoveBet = this.ownerRemoveBet.bind(this);
+        this.addOption = this.addOption.bind(this);
+        this.removeNewOption = this.removeNewOption.bind(this);
+        this.removeOption = this.removeOption.bind(this);
+        this.handleRemoveWagerOptionSubmit = this.handleRemoveWagerOptionSubmit.bind(this);
+        this.handleRemoveOptionCancel = this.handleRemoveOptionCancel.bind(this);
     }
 
     componentDidMount() {
         keys = [];
+        newOptions = [];
         const { match } = this.props.match;
         const wagerId = match.params.wagerId;
 
         this.getWagerDetails(wagerId)
-        // .then((wager: any) => {
-        //     return this.checkWagerStatus(wager);
-        // })
         .then((wager: any) => {
             this.setWagerState(wager);
             setTimeout(() => {
@@ -313,7 +320,15 @@ export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
             }
             return key;
         });
+        newOptions = newOptions.map((key: any) => {
+            if (key.option === name) {
+                key.value = value;
+                return key;
+            }
+            return key;
+        });
         this.setState({
+            newOptions: newOptions,
             options: keys,
             dirtyData: true,
         });
@@ -372,6 +387,12 @@ export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
     handleRemoveWagerCancel() {
         this.setState({
             modalVisible: false
+        });
+    }
+
+    handleRemoveOptionCancel() {
+        this.setState({
+            removeOptionModal: false
         });
     }
 
@@ -441,6 +462,58 @@ export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
         } else {
             this.appStore.showMessage("error", "Please select a Winning Option");
         }
+    }
+
+    addOption() {
+        const option = `option${uuid}`;
+        newOptions.push({
+            option: option,
+            value: ""
+        });
+        uuid++;
+        this.setState({
+            newOptions: newOptions
+        });
+    }
+
+    removeNewOption(k: any) {
+        newOptions = newOptions.filter((item: any) => item.option !== k.option);
+        this.setState({
+            newOptions: newOptions
+        });
+    }
+
+    removeOption(option: any) {
+        this.setState({
+            removeOption: option,
+            removeOptionModal: true
+        });
+    }
+
+    handleRemoveWagerOptionSubmit(option: any) {
+        const optionData = {
+            option_id: this.state.removeOption!.option_id,
+            wager_id: this.state.removeOption!.wager_id
+        };
+        debugger;
+        this.appStore.dataStore.removeOption(optionData)
+        .then(() => {
+            const newKeys: any = [];
+            keys.forEach((key: any) => {
+                if (key.option_id !== this.state.removeOption.option_id && key.)
+                    newKeys.push(key);
+            });
+            keys = newKeys;
+            this.setState({
+                removeOptionModal: false,
+                options: keys
+            });
+            this.appStore.showMessage("success", "Successfully removed Wager Option");
+        })
+        .catch((err: any) => {
+            console.error(err);
+            this.appStore.showMessage("error", "Something went wrong, Unable to remove Wager Option.");
+        });
     }
     
     render() {
@@ -525,6 +598,22 @@ export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
                   ]}
                 >
                     <h4> Are you sure you want to delete this wager? This action cannot be undone and will deleting this Wager will also remove all Bets...</h4>
+                </Modal>
+            </div>
+        );
+
+        const removeWagerOptionConfirmation = (
+            <div className="sb_wager__remove-wager-container sb_wager__remove-option-container">
+                <Modal
+                visible={this.state.removeOptionModal}
+                footer={[
+                    <Button key="back" onClick={this.handleRemoveOptionCancel}>CANCEL</Button>,
+                    <Button key="submit" type="danger" onClick={this.handleRemoveWagerOptionSubmit}>
+                      DELETE OPTION
+                    </Button>,
+                  ]}
+                >
+                    <h4> Are you sure you want to delete this wager option? This action cannot be undone and will deleting this Option will also remove all Bets...</h4>
                 </Modal>
             </div>
         );
@@ -632,9 +721,37 @@ export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
                             onChange={this.handleOptionChange}
                             placeholder="Wager Option" 
                             className="sb_wagers__option-input"/>
+                            {keys.length > 1 ? (
+                            <Icon
+                                className="dynamic-delete-button sb_wagers__option-remove-icon"
+                                type="minus-circle-o"
+                                onClick={() => this.removeOption(k)}
+                            />
+                        ) : null}
                     </FormItem>
             );
-          });
+        });
+
+        const newFormItems = newOptions.map((k: any, i: any) => {
+            return (
+                    <FormItem
+                        key={`newFormItem${i}`}>
+                        <Input 
+                            name={k.option}
+                            value={k.value}
+                            onChange={this.handleOptionChange}
+                            placeholder="Wager Option" 
+                            className="sb_wagers__option-input"/>
+                            {keys.length > 1 ? (
+                            <Icon
+                                className="dynamic-delete-button sb_wagers__option-remove-icon"
+                                type="minus-circle-o"
+                                onClick={() => this.removeNewOption(k)}
+                            />
+                        ) : null}
+                    </FormItem>
+            );
+        });
 
         const drawer = (
             <Drawer
@@ -764,7 +881,21 @@ export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
                     </FormItem>
 
                     <h5 className="sb_wagers__add-wager-input-label">Wager Options (2-3 Options): </h5>
+
                     {formItems}
+
+                    {newFormItems}
+
+                    {(keys.length + newOptions.length) < 3 &&
+                    <FormItem 
+                        className="sb_wagers__add-option-button">
+                        <Button 
+                            type="dashed" 
+                            onClick={this.addOption} 
+                            style={{ width: "60%" }}>
+                            <Icon type="plus" /> Add Wager Option
+                        </Button>
+                    </FormItem>}
 
                     <FormItem className="sb_wagers__submit-button">
                         <Button 
@@ -986,6 +1117,7 @@ export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
                 {drawer}
                 {removeWagerConfirmation}
                 {showWinnerModal && winnerModal}
+                {userIsOwner && removeWagerOptionConfirmation}
             </div>
         );
 

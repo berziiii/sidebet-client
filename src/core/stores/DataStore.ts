@@ -336,6 +336,19 @@ export class DataStore implements Models.Store {
     }
 
     @action
+    removeOption(optionData: any) {
+        return new Promise((resolve, reject) => {
+            APIClient.removeWagerOption(optionData)
+            .then(() => {
+                resolve();
+            })
+            .catch((err: any) => {
+                reject(err);
+            });
+        });
+    }
+
+    @action
     removeWager(wagerId: any) {
         return new Promise((resolve, reject) => {
             APIClient.removeWager(wagerId)

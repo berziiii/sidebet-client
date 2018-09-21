@@ -328,6 +328,23 @@ export class APIClient {
         });
     }
 
+    static removeWagerOption(optionData: any) {
+        return new Promise((resolve, reject) => {
+            const {client, config} = this.createClient();
+            const url = `/api/wagers/${optionData.wager_id}/options/${optionData.option_id}/delete`;
+            delete optionData.wager_id;
+            delete optionData.option_id;
+            return client.delete(url, config)
+            .then(() => {
+                resolve();
+            })
+            .catch((err) => {
+                console.error(err);
+                reject(err.response.data);
+            });
+        });
+    }
+
     static removeWager(wagerId: any) {
         return new Promise((resolve, reject) => {
             const {client, config} = this.createClient();

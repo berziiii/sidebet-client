@@ -6,7 +6,9 @@ export interface WagerItemProps {
 export interface WagerItemState {
     loading?: boolean;
     modalVisible?: boolean;
+    removeOptionModal?: boolean;
     dirtyData?: boolean;
+    removeOption?: any | undefined;
     wager_id?: string | undefined;
     wager_title?: string | undefined;
     wager_description?: string | undefined;
@@ -30,4 +32,5 @@ export interface WagerItemState {
     visibleWinnerModal?: any | undefined;
     winning_option?: any | undefined;
     proposedWinner?: any | undefined;
+    newOptions?: any | undefined;
 }

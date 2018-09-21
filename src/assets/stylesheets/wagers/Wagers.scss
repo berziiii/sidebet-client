@@ -122,11 +122,14 @@
 }
 
 .sb_wagers__option-input {
-  width: 90%;
+  width: 100%;
 }
 .sb_wagers__option-remove-icon {
   margin-left: 10px;
   font-size: 1.25em;
+  position: absolute;
+  top: 0px;
+  right: 5px;
 }
 
 .sb_wagers__wager-details {
@@ -196,8 +199,8 @@
   }
   .sb_wagers__add-wager-drawer {
     .ant-drawer-content-wrapper {
-      min-width: 80vw;
-      max-width: 80vw;
+      min-width: 90vw;
+      max-width: 90vw;
     }
     .ant-drawer-wrapper-body {
       padding: 5px 0px;
@@ -217,7 +220,9 @@
       font-size: 2em;
     }
   }
-  .sb_wagers__option-input {
-    width: 88%;
+  .sb_wagers__add-option-button {
+    button {
+      width: 90%!important;
+    }
   }
 }

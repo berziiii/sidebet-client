@@ -310,6 +310,12 @@
   }
 }
 
+.sb_wager__remove-option-container {
+  .ant-modal-close-x {
+    display: none!important;
+  }
+}
+
 @media(max-width: 900px) {
   .sb_wager__remove-bet-button {
     margin-left: 5px;

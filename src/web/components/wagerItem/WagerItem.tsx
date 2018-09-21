@@ -260,17 +260,17 @@ export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
     }
 
     handleBettingClosesChange(d: any, dateStamp: any) {
-        const timestame = moment(dateStamp).format();
+        const timestamp = moment(dateStamp).utc().format();
         this.setState({
-            closes_at: timestame,
+            closes_at: timestamp,
             dirtyData: true,
         });
     }
 
     handleBetExpiresAt(d: any, dateStamp: any) {
-        const timestame = moment(dateStamp).format();
+        const timestamp = moment(dateStamp).utc().format();
         this.setState({
-            expires_at: timestame,
+            expires_at: timestamp,
             dirtyData: true,
         });
     }
@@ -398,7 +398,7 @@ export class WagerItem extends BaseComponent<WagerItemProps, WagerItemState> {
     }
 
     showWinnerModal() {
-        if (!this.state.winning_option && moment().format() >= this.state.expires_at && this.state.owner_id === this.appStore.dataStore.authorizedUser.user_id)
+        if (!this.state.winning_option && moment.utc().format() >= this.state.expires_at && this.state.owner_id === this.appStore.dataStore.authorizedUser.user_id)
             this.setState({
                 visibleWinnerModal: true,
             });

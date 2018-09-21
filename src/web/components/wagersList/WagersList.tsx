@@ -117,16 +117,16 @@ export class WagersList extends BaseComponent<WagersListProps, WagersListState> 
     }
 
     handleBettingClosesChange(d: any, dateStamp: any) {
-        const timestame = moment(dateStamp).format();
+        const timestamp = moment(dateStamp).utc().format();
         this.setState({
-            closes_at: timestame
+            closes_at: timestamp
         });
     }
 
     handleBetExpiresAt(d: any, dateStamp: any) {
-        const timestame = moment(dateStamp).format();
+        const timestamp = moment(dateStamp).utc().format();
         this.setState({
-            expires_at: timestame
+            expires_at: timestamp
         });
     }
 
